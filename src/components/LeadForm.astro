@@ -1,0 +1,56 @@
+---
+// Modulo di richiesta. Funziona anche senza JavaScript (invio nativo a Netlify Forms);
+// con JavaScript l'invio è gestito da src/scripts/site.ts.
+import { site } from '../config/site';
+import type { LeadKind } from '../lib/leads';
+
+export interface Field {
+  name: string;
+  label: string;
+  type?: string;
+  required?: boolean;
+  half?: boolean;
+  textarea?: boolean;
+  options?: string[];
+}
+interface Props {
+  kind: LeadKind;
+  fields: Field[];
+  submitLabel: string;
+  dark?: boolean;
+  payload?: unknown;
+}
+const { kind, fields, submitLabel, dark = false, payload } = Astro.props;
+const input = dark ? 'field-dark' : 'field';
+const muted = dark ? 'text-stone' : 'text-moss';
+const id = (name: string) => `${kind}-${name}`;
+---
+<form name={site.formName} method="POST" action="/grazie" data-netlify="true" netlify-honeypot="bot-field" data-lead class="grid grid-cols-2 gap-4">
+  <input type="hidden" name="form-name" value={site.formName} />
+  <input type="hidden" name="kind" value={kind} />
+  {payload !== undefined && <input type="hidden" name="payload" value={JSON.stringify(payload)} />}
+  <p hidden><label>Non compilare: <input name="bot-field" tabindex="-1" autocomplete="off" /></label></p>
+
+  {fields.map((f) => (
+    <div class={f.half ? 'col-span-2 sm:col-span-1' : 'col-span-2'}>
+      <label for={id(f.name)} class={`label ${muted}`}>{f.label}{f.required && ' *'}</label>
+      {f.textarea ? (
+        <textarea id={id(f.name)} name={f.name} rows="4" class={input} required={f.required}></textarea>
+      ) : f.options ? (
+        <select id={id(f.name)} name={f.name} class={input} required={f.required}>
+          <option value="">Seleziona…</option>
+          {f.options.map((o) => <option>{o}</option>)}
+        </select>
+      ) : (
+        <input id={id(f.name)} name={f.name} type={f.type ?? 'text'} class={input} required={f.required} />
+      )}
+    </div>
+  ))}
+
+  <label class={`col-span-2 flex items-start gap-3 text-xs leading-relaxed ${muted}`}>
+    <input type="checkbox" name="privacy" value="accettata" required class="mt-0.5 size-4 accent-[#ad9870]" />
+    <span>Ho letto l'<a href="/privacy" class="underline">informativa sulla privacy</a> e acconsento a essere ricontattato per questa richiesta. *</span>
+  </label>
+  <button type="submit" class={`${dark ? 'btn-brass' : 'btn-forest'} col-span-2 mt-1`}>{submitLabel}</button>
+  <p class={`col-span-2 text-xs ${muted}`}>Nessun impegno d'acquisto.</p>
+</form>

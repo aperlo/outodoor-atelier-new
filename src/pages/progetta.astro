@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import Configurator from '../components/islands/Configurator.tsx';
+---
+<Base
+  title="Configuratore — progetta il tuo spazio"
+  description="Configuratore: ambiente, dimensioni, superficie, accessori, posa e preventivo immediato con IVA e spedizione."
+>
+  <section class="bg-ivory pb-10 pt-32">
+    <div class="wrap">
+      <p class="eyebrow text-brass-ink">Configuratore</p>
+      <h1 class="mt-3 text-4xl sm:text-5xl">Progetta il tuo spazio.</h1>
+      <p class="mt-4 max-w-2xl text-moss">Sette passi: scegli l'ambiente, inserisci le misure, seleziona la superficie e gli accessori, decidi la posa e ottieni il preventivo voce per voce.</p>
+    </div>
+  </section>
+  <div class="wrap py-10">
+    <Configurator client:only="preact">
+      <p slot="fallback" class="py-20 text-center text-moss">Caricamento del configuratore…</p>
+    </Configurator>
+    <noscript><p class="py-10 text-moss">Il configuratore richiede JavaScript. In alternativa <a href="/contatti" class="underline">scrivici</a> le misure del tuo spazio.</p></noscript>
+  </div>
+</Base>

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "geotextile",
+    "name": "Telo geotessile antiradice",
+    "unit": "m²",
+    "price": 1.2,
+    "weight_kg": 0.1,
+    "desc": "Consigliato su terreno: limita la crescita di infestanti."
+  },
+  {
+    "id": "sand",
+    "name": "Sabbia silicea di intaso 25 kg",
+    "unit": "sacco",
+    "price": 9.5,
+    "weight_kg": 25,
+    "desc": "Stabilizza il manto (quantità da verificare per modello)."
+  },
+  {
+    "id": "tape",
+    "name": "Banda di giunzione 30 cm",
+    "unit": "m",
+    "price": 3.9,
+    "weight_kg": 0.1,
+    "desc": "Unisce i teli da 2 m lungo le giunte."
+  },
+  {
+    "id": "underlay",
+    "name": "Materassino drenante 10 mm",
+    "unit": "m²",
+    "price": 6.5,
+    "weight_kg": 0.6,
+    "desc": "Su piastrelle o massetto: comfort e deflusso dell'acqua."
+  },
+  {
+    "id": "pegs",
+    "name": "Picchetti a U (conf. 50)",
+    "unit": "conf.",
+    "price": 14,
+    "weight_kg": 2,
+    "desc": "Fissaggio perimetrale su terreno."
+  },
+  {
+    "id": "adhesive",
+    "name": "Collante bicomponente 6 kg",
+    "unit": "conf.",
+    "price": 42,
+    "weight_kg": 6.5,
+    "desc": "Circa 15 m di giunta per confezione (indicativo)."
+  },
+  {
+    "id": "diy-kit",
+    "name": "Kit posa fai-da-te",
+    "unit": "kit",
+    "price": 49,
+    "weight_kg": 1.5,
+    "desc": "Cutter, spatola dentata, guida di posa illustrata."
+  }
+]

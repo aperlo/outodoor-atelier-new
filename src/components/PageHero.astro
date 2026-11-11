@@ -1,0 +1,31 @@
+---
+// Apertura di pagina: con immagine (scura) oppure su fondo chiaro.
+interface Props {
+  overline: string;
+  title: string;
+  intro?: string;
+  image?: string;
+}
+const { overline, title, intro, image } = Astro.props;
+---
+{image ? (
+  <section class="relative isolate flex min-h-[62vh] items-end bg-forest-deep text-sand">
+    <img src={image} alt="" class="absolute inset-0 -z-10 size-full object-cover" fetchpriority="high" />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-t from-forest-deep via-forest-deep/55 to-forest-deep/30"></div>
+    <div class="wrap pb-16 pt-36">
+      <p class="eyebrow text-brass">{overline}</p>
+      <h1 class="mt-4 max-w-4xl text-4xl leading-[1.08] sm:text-5xl lg:text-6xl">{title}</h1>
+      {intro && <p class="mt-5 max-w-2xl text-base leading-relaxed text-stone sm:text-lg">{intro}</p>}
+      <slot />
+    </div>
+  </section>
+) : (
+  <section class="bg-ivory pb-14 pt-36">
+    <div class="wrap">
+      <p class="eyebrow text-brass-ink">{overline}</p>
+      <h1 class="mt-4 max-w-4xl text-4xl leading-[1.08] sm:text-5xl lg:text-6xl">{title}</h1>
+      {intro && <p class="mt-5 max-w-2xl text-base leading-relaxed text-moss sm:text-lg">{intro}</p>}
+      <slot />
+    </div>
+  </section>
+)}

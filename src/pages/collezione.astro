@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import ProductCard from '../components/ProductCard.astro';
+import DemoNote from '../components/DemoNote.astro';
+import Icon from '../components/Icon.astro';
+import { products, config } from '../lib/quote';
+import { img, Q, useLabels, collectionLabels, heightBands } from '../data/content';
+
+const appearances = [...new Set(products.map((p) => p.appearance))];
+const maxPrice = Math.ceil(Math.max(...products.map((p) => p.price_m2)));
+const selects: { name: string; label: string; options: [string, string][] }[] = [
+  { name: 'use', label: 'Destinazione', options: Object.entries(useLabels) },
+  { name: 'height', label: 'Altezza', options: Object.entries(heightBands).map(([k, v]) => [k, v[2]]) },
+  { name: 'appearance', label: 'Aspetto', options: appearances.map((a) => [a, a]) },
+  { name: 'softness', label: 'Morbidezza', options: [['alta', 'Alta · piedi nudi'], ['media', 'Media'], ['tecnica', 'Tecnica · calpestio intenso']] },
+  { name: 'drainage', label: 'Drenaggio', options: [['elevata', 'Elevato'], ['standard', 'Standard']] },
+  { name: 'collection', label: 'Collezione', options: Object.entries(collectionLabels) },
+];
+---
+<Base
+  title="Collezione — erba sintetica premium"
+  description="Esplora la collezione: filtra per altezza, utilizzo, aspetto, morbidezza, drenaggio e prezzo. Prezzi chiari al metro quadro."
+>
+  <PageHero
+    overline="La Collezione"
+    title="Superfici scelte una a una, per ogni modo di vivere l'esterno."
+    intro="Prezzi trasparenti al metro quadro, nessun minimo d'ordine, taglio su misura. Dal balcone di 6 m² al resort."
+    image={img(Q.macro2)}
+  />
+
+  <div class="wrap py-14" data-catalog>
+    <form data-filters class="grid gap-4 border border-stone-line bg-white p-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="sm:col-span-2 lg:col-span-4">
+        <label for="f-q" class="label text-moss">Cerca</label>
+        <div class="relative">
+          <Icon name="search" size={16} class="absolute left-3 top-1/2 -translate-y-1/2 text-moss" />
+          <input id="f-q" name="q" type="search" placeholder="Modello, ambiente, aspetto…" class="field pl-10" />
+        </div>
+      </div>
+      {selects.map((s) => (
+        <div>
+          <label for={`f-${s.name}`} class="label text-moss">{s.label}</label>
+          <select id={`f-${s.name}`} name={s.name} class="field">
+            <option value="">Tutti</option>
+            {s.options.map(([v, l]) => <option value={v}>{l}</option>)}
+          </select>
+        </div>
+      ))}
+      <div class="sm:col-span-2">
+        <label for="f-price" class="label text-moss">Prezzo massimo · <span data-price-out class="normal-case tracking-normal">tutti</span></label>
+        <input id="f-price" name="maxPrice" type="range" min="0" max={maxPrice} step="1" value="0" class="w-full accent-[#ad9870]" />
+      </div>
+    </form>
+
+    <div class="mt-5 flex flex-wrap items-center gap-4 text-sm">
+      <p><span data-result-count class="font-mono font-semibold">{products.length}</span> superfici</p>
+      <button type="button" data-reset hidden class="underline">Azzera filtri</button>
+      {config.demo_values && <p class="ml-auto text-xs text-moss">Catalogo dimostrativo · {products.length} di {config.catalogue_size_target} modelli previsti</p>}
+    </div>
+
+    <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {products.map((p) => <ProductCard p={p} />)}
+    </div>
+    <p data-empty hidden class="mt-10 text-center text-moss">Nessuna superficie corrisponde ai filtri. Prova ad allargare la ricerca.</p>
+    <DemoNote class="mt-8" />
+  </div>
+</Base>

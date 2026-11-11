@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { img, projects } from '../data/content';
+---
+<Base
+  title="Ispirazione — ambientazioni outdoor"
+  description="Ville, rooftop, bordi piscina, allestimenti e interni: ambientazioni per immaginare la superficie giusta."
+>
+  <PageHero
+    overline="Ispirazione"
+    title="Spazi che raccontano chi li vive."
+    intro="Una selezione di ambientazioni per immaginare il risultato. Ogni immagine rimanda alla superficie più adatta a quel tipo di spazio."
+  />
+  <div class="wrap py-14">
+    <p class="mb-8 border border-stone-line bg-white p-4 text-sm text-moss">Queste immagini sono ambientazioni illustrative, non installazioni realizzate da The Outdoor Atelier. I progetti reali verranno pubblicati qui con le fotografie dei clienti.</p>
+    <div class="columns-1 gap-5 sm:columns-2 lg:columns-3">
+      {projects.map((p) => (
+        <a href={`/superfici/${p.product}`} class="group mb-8 block break-inside-avoid">
+          <div class={`overflow-hidden ${p.tall ? 'aspect-[3/4]' : 'aspect-[4/3]'}`}>
+            <img src={img(p.image, 900)} alt={p.title} loading="lazy" decoding="async" class="size-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          </div>
+          <p class="mt-3 font-heading text-xl">{p.title}</p>
+          <p class="eyebrow mt-1 text-moss">{p.place} · vedi la superficie →</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</Base>

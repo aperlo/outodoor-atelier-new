@@ -1,0 +1,33 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Vecchi indirizzi del prototipo: il pagamento online non esiste più.
+[[redirects]]
+  from = "/checkout"
+  to = "/carrello"
+  status = 301
+
+[[redirects]]
+  from = "/pagamento/*"
+  to = "/carrello"
+  status = 301
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    # Le immagini di ambientazione arrivano ancora da Unsplash e Pexels: togliere i due domini quando saranno ospitate sul sito.
+    Content-Security-Policy = "default-src 'self'; img-src 'self' data: blob: https://images.unsplash.com https://images.pexels.com; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://images.unsplash.com https://images.pexels.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

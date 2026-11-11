@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+/* Palette e caratteri del marchio. */
+@theme {
+  --color-sand: #faf8f5;
+  --color-ivory: #f3f0e8;
+  --color-forest: #263b32;
+  --color-forest-deep: #172820;
+  --color-moss: #5a675e;
+  --color-brass: #ad9870;
+  --color-brass-ink: #7a6741; /* ottone scuro: testo leggibile su fondo chiaro */
+  --color-stone: #d8d2c5;
+  --color-stone-line: #e4dec8;
+
+  --font-heading: "Playfair Display Variable", Georgia, serif;
+  --font-sans: "Manrope Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+  body {
+    background: var(--color-sand);
+    color: var(--color-forest-deep);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    text-wrap: balance;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brass);
+    outline-offset: 2px;
+  }
+  [hidden] {
+    display: none !important;
+  }
+  summary {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .wrap {
+    @apply mx-auto w-full max-w-[1320px] px-5 sm:px-8;
+  }
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.2em];
+  }
+  .btn-brass,
+  .btn-forest,
+  .btn-line,
+  .btn-line-light {
+    @apply inline-flex items-center justify-center gap-2 px-7 py-4 text-center text-xs font-semibold uppercase tracking-[0.18em] transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-brass {
+    @apply bg-brass text-forest-deep hover:bg-[#bfab85];
+  }
+  .btn-forest {
+    @apply bg-forest text-sand hover:bg-forest-deep;
+  }
+  .btn-line {
+    @apply border border-current hover:bg-forest-deep hover:text-sand;
+  }
+  .btn-line-light {
+    @apply border border-current hover:bg-sand hover:text-forest-deep;
+  }
+  .field {
+    @apply w-full border border-stone bg-white px-4 py-3 text-sm text-forest-deep outline-none transition-colors focus:border-brass;
+  }
+  .field-dark {
+    @apply w-full border border-forest bg-forest-deep/60 px-4 py-3 text-sm text-sand outline-none transition-colors placeholder:text-stone/50 focus:border-brass;
+  }
+  .label {
+    @apply mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em];
+  }
+  .chip {
+    @apply border border-stone px-4 py-2.5 text-sm transition-colors hover:border-brass;
+  }
+  .chip[aria-pressed="true"] {
+    @apply border-forest bg-forest text-sand;
+  }
+  .icon-btn {
+    @apply inline-flex size-11 items-center justify-center border border-stone text-forest-deep transition-colors hover:border-brass;
+  }
+  .icon-btn[aria-pressed="true"] {
+    @apply border-brass bg-brass text-forest-deep;
+  }
+  .note {
+    @apply flex items-start gap-2 text-xs leading-relaxed text-moss;
+  }
+}
+
+/* Barra scorrevole dei punti di forza. */
+.marquee {
+  overflow: hidden;
+}
+.marquee > div {
+  display: flex;
+  width: max-content;
+  gap: 2.5rem;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .marquee > div {
+    animation: marquee 48s linear infinite;
+  }
+  .hero-img {
+    animation: hero-in 2.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes hero-in {
+  from {
+    transform: scale(1.06);
+  }
+}
+
+/* Intestazione: trasparente sopra l'immagine di apertura della home, piena altrove. */
+.site-header {
+  @apply border-b border-stone-line bg-sand/90 text-forest-deep backdrop-blur-xl;
+}
+.site-header[data-over-hero="true"] {
+  @apply border-transparent bg-transparent text-sand backdrop-blur-none;
+}
+.site-header[data-over-hero="true"] .header-cta {
+  @apply bg-sand/15 text-sand hover:bg-sand/25;
+}
+.site-header[data-over-hero="true"] .header-tagline {
+  @apply text-stone;
+}
+
+/* Notifiche. */
+#toast-host {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: min(24rem, calc(100vw - 2rem));
+}
+.toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--color-forest-deep);
+  color: var(--color-sand);
+  padding: 0.85rem 1.1rem;
+  font-size: 0.875rem;
+  box-shadow: 0 12px 36px rgb(23 40 32 / 0.25);
+}
+.toast a {
+  color: var(--color-brass);
+  font-weight: 600;
+  text-decoration: underline;
+  white-space: nowrap;
+}

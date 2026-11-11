@@ -1,0 +1,20 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Visualizer from '../components/islands/Visualizer.tsx';
+---
+<Base
+  title="Visualizzatore foto — prova l'erba sintetica sul tuo spazio"
+  description="Carica una foto del tuo giardino o terrazzo, seleziona l'area e guarda il prima e dopo con la superficie scelta."
+>
+  <PageHero
+    overline="Visualizzatore foto"
+    title="Guarda il tuo spazio, già trasformato."
+    intro="Carica una foto, traccia l'area con pochi clic, scegli la superficie e confronta il prima e dopo. Nessuna intelligenza artificiale: la texture è una fotografia applicata alla tua selezione. È un'anteprima estetica, non una misura."
+  />
+  <div class="wrap py-12">
+    <Visualizer client:only="preact">
+      <p slot="fallback" class="py-20 text-center text-moss">Caricamento del visualizzatore…</p>
+    </Visualizer>
+  </div>
+</Base>

@@ -1,0 +1,19 @@
+---
+// Avviso sui valori dimostrativi. Sparisce da solo quando config.demo_values diventa false.
+import Icon from './Icon.astro';
+import config from '../data/config.json';
+import { demoNote } from '../data/content';
+
+interface Props {
+  text?: string;
+  class?: string;
+  always?: boolean;
+}
+const { text = demoNote, class: cls = '', always = false } = Astro.props;
+---
+{(config.demo_values || always) && (
+  <p class={`note ${cls}`}>
+    <Icon name="info" size={14} class="mt-0.5 text-brass-ink" />
+    <span>{text}</span>
+  </p>
+)}

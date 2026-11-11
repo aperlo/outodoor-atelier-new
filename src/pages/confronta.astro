@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import DemoNote from '../components/DemoNote.astro';
+import CompareTable from '../components/islands/CompareTable.tsx';
+---
+<Base
+  title="Confronta superfici"
+  description="Confronta fino a tre superfici per altezza, aspetto, morbidezza, drenaggio e prezzo."
+  noindex
+>
+  <PageHero overline="Confronto" title="Tre superfici, fianco a fianco." intro="Aggiungi i modelli dalla collezione con l'icona di confronto." />
+  <div class="wrap py-14">
+    <CompareTable client:only="preact">
+      <p slot="fallback" class="py-20 text-center text-moss">Caricamento del confronto…</p>
+    </CompareTable>
+    <DemoNote class="mt-6" />
+  </div>
+</Base>

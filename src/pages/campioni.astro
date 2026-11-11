@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import SamplesBox from '../components/islands/SamplesBox.tsx';
+import { config } from '../lib/quote';
+import { img, Q } from '../data/content';
+
+const s = config.sample_service;
+---
+<Base
+  title={`Box campioni${s.free ? ' gratuito' : ''}`}
+  description={`Ricevi fino a ${s.max_samples} campioni di erba sintetica premium per toccare con mano fibra, morbidezza e colore.`}
+>
+  <PageHero
+    overline="Campioni"
+    title="Tocca con mano, prima di scegliere."
+    intro={`Seleziona fino a ${s.max_samples} superfici: le spediamo a casa tua${s.free ? ' gratuitamente' : ''}, con una guida alla scelta.`}
+    image={img(Q.macro)}
+  />
+  <div class="wrap py-14">
+    <SamplesBox client:only="preact">
+      <p slot="fallback" class="py-20 text-center text-moss">Caricamento dei campioni…</p>
+    </SamplesBox>
+  </div>
+</Base>

@@ -1,0 +1,77 @@
+---
+import Icon from './Icon.astro';
+import { nav, tagline } from '../data/content';
+import { site } from '../config/site';
+import config from '../data/config.json';
+
+interface Props {
+  overHero?: boolean;
+}
+const { overHero = false } = Astro.props;
+const maxSamples = config.sample_service.max_samples;
+---
+<header
+  class="site-header fixed inset-x-0 top-0 z-50 transition-colors duration-300"
+  data-over-hero={overHero ? 'true' : 'false'}
+  data-has-hero={overHero ? 'true' : undefined}
+>
+  <div class="wrap flex h-20 items-center gap-4">
+    <a href="/" class="flex flex-col leading-none">
+      <span class="whitespace-nowrap font-heading text-lg sm:text-[22px]">{site.name}</span>
+      <span class="header-tagline eyebrow mt-1.5 text-[9px] text-brass-ink">{tagline}</span>
+    </a>
+
+    <nav aria-label="Principale" class="ml-6 hidden items-center gap-5 xl:flex">
+      {nav.map((item) => (
+        <div class="group relative">
+          <a href={item.to} class="block py-7 text-[13px] font-medium opacity-85 hover:opacity-100">{item.label}</a>
+          <div class="invisible absolute left-0 top-full flex gap-10 border border-stone-line bg-sand p-7 text-forest-deep opacity-0 shadow-[0_18px_40px_rgb(23_40_32/0.12)] transition-opacity duration-200 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+            {item.cols.map((col) => (
+              <div class="min-w-44">
+                <p class="eyebrow mb-3 text-brass-ink">{col.title}</p>
+                <ul class="space-y-2 text-sm">
+                  {col.links.map((l) => (
+                    <li><a href={l.to} class="whitespace-nowrap hover:text-brass-ink">{l.label}</a></li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+      <a href="/contatti" class="py-7 text-[13px] font-medium opacity-85 hover:opacity-100">Contatti</a>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-1">
+      <a href="/progetta" class="header-cta mr-2 hidden bg-forest px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-sand transition-colors hover:bg-forest-deep md:inline-flex">Preventivo rapido</a>
+      <a href="/campioni" aria-label="Box campioni" class="flex h-11 items-center gap-1.5 px-2">
+        <Icon name="box" size={20} />
+        <span class="font-mono text-[11px]"><span data-samples-count>0</span>/{maxSamples}</span>
+      </a>
+      <a href="/carrello" aria-label="Carrello" class="relative flex size-11 items-center justify-center">
+        <Icon name="bag" size={20} />
+        <span data-cart-count hidden class="absolute right-0.5 top-1 flex size-4.5 items-center justify-center rounded-full bg-brass font-mono text-[10px] text-forest-deep">0</span>
+      </a>
+      <details class="xl:hidden" data-mobile-menu>
+        <summary aria-label="Menu" class="flex size-11 list-none items-center justify-center [&::-webkit-details-marker]:hidden">
+          <Icon name="menu" size={22} />
+        </summary>
+        <div class="fixed inset-x-0 bottom-0 top-20 overflow-y-auto border-t border-stone-line bg-sand px-5 py-6 text-forest-deep">
+          {nav.map((item) => (
+            <details class="border-b border-stone-line">
+              <summary class="flex items-center justify-between py-4 font-heading text-xl">{item.label}<span aria-hidden="true" class="text-brass-ink">+</span></summary>
+              <div class="flex flex-col gap-3 pb-5 text-sm">
+                {item.cols.flatMap((c) => c.links).map((l) => <a href={l.to}>{l.label}</a>)}
+              </div>
+            </details>
+          ))}
+          <a href="/contatti" class="block border-b border-stone-line py-4 font-heading text-xl">Contatti</a>
+          <div class="mt-6 flex flex-col gap-3">
+            <a href="/progetta" class="btn-forest">Progetta il tuo spazio</a>
+            <a href="/campioni" class="btn-line">Box campioni</a>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>

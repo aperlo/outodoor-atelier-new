@@ -1,0 +1,72 @@
+---
+import { sectors, daP } from '../data/content';
+import { site, companyReady } from '../config/site';
+import config from '../data/config.json';
+
+const living = sectors.filter((s) => s.group === 'living').slice(0, 7);
+const others = sectors.filter((s) => s.group !== 'living');
+const c = site.company;
+const year = new Date().getFullYear();
+---
+<footer class="bg-forest-deep text-sand">
+  <div class="wrap py-16">
+    <div class="grid gap-12 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <p class="font-heading text-2xl">{site.name}</p>
+        <p class="mt-4 max-w-sm text-sm leading-relaxed text-stone">Dove gli spazi all'aperto diventano esperienze. Superfici premium prodotte in Italia {daP}.</p>
+        <p class="mt-4 font-heading text-lg italic text-brass">{site.claim}</p>
+      </div>
+      <div class="grid grid-cols-2 gap-8 text-sm sm:grid-cols-4 lg:col-span-8">
+        <div>
+          <p class="eyebrow mb-4 text-brass">Acquista</p>
+          <ul class="space-y-2.5 text-stone">
+            <li><a class="hover:text-sand" href="/collezione">Collezione</a></li>
+            <li><a class="hover:text-sand" href="/progetta">Configuratore</a></li>
+            <li><a class="hover:text-sand" href="/campioni">Campioni</a></li>
+            <li><a class="hover:text-sand" href="/visualizzatore">Visualizzatore foto</a></li>
+            <li><a class="hover:text-sand" href="/confronta">Confronta</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow mb-4 text-brass">Ambienti</p>
+          <ul class="space-y-2.5 text-stone">
+            {living.map((s) => <li><a class="hover:text-sand" href={`/settori/${s.slug}`}>{s.nav}</a></li>)}
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow mb-4 text-brass">Settori</p>
+          <ul class="space-y-2.5 text-stone">
+            {others.map((s) => <li><a class="hover:text-sand" href={`/settori/${s.slug}`}>{s.nav}</a></li>)}
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow mb-4 text-brass">Atelier</p>
+          <ul class="space-y-2.5 text-stone">
+            <li><a class="hover:text-sand" href="/qualita">Qualità</a></li>
+            <li><a class="hover:text-sand" href="/professionisti">Professionisti</a></li>
+            <li><a class="hover:text-sand" href="/progetti">Ispirazione</a></li>
+            <li><a class="hover:text-sand" href="/contatti">Contatti</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-14 space-y-3 border-t border-forest pt-6 text-xs leading-relaxed text-stone">
+      <p class="flex flex-wrap gap-x-5 gap-y-1">
+        <a class="hover:text-sand" href="/privacy">Privacy</a>
+        <a class="hover:text-sand" href="/cookie">Cookie</a>
+        <a class="hover:text-sand" href="/condizioni-di-vendita">Condizioni di vendita</a>
+      </p>
+      {companyReady && (
+        <p>
+          {c.legalName}{c.address && ` · ${c.address}`}{c.vatId && ` · P. IVA ${c.vatId}`}{c.rea && ` · REA ${c.rea}`}
+          {c.email && ` · ${c.email}`}{c.pec && ` · PEC ${c.pec}`}
+        </p>
+      )}
+      <p>
+        © {year} {site.name}.
+        {config.demo_values && ' Sito in anteprima: prezzi, specifiche e tempi sono valori dimostrativi da validare. Nessun pagamento online: gli ordini sono richieste confermate da un consulente.'}
+      </p>
+    </div>
+  </div>
+</footer>

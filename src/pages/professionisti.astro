@@ -1,0 +1,107 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadForm from '../components/LeadForm.astro';
+import DemoNote from '../components/DemoNote.astro';
+import Icon from '../components/Icon.astro';
+import { config } from '../lib/quote';
+import { img, Q } from '../data/content';
+
+const benefits = [
+  'Listino professionale riservato',
+  'Campionature di grande formato',
+  'Documentazione tecnica su richiesta',
+  'Preventivi per capitolati e gare',
+  'Consulente dedicato',
+  'Rete installatori (in costruzione)',
+];
+const roles = ['Architetto', 'Interior designer', 'Paesaggista', 'Hotel / hospitality', 'Impresa / general contractor', 'Installatore', 'Ente pubblico', 'Organizzatore eventi'];
+---
+<Base
+  title="Area professionisti — architetti, paesaggisti, installatori"
+  description="Listino professionale, campionature, documentazione e preventivi per architetti, interior designer, paesaggisti, hotel e installatori."
+>
+  <PageHero
+    overline="Area Professionisti"
+    title="Strumenti per chi progetta lo spazio degli altri."
+    intro="Architetti, paesaggisti, interior designer, hospitality, enti e installatori."
+    image={img(Q.hotel2)}
+  />
+
+  <section class="wrap grid gap-x-10 gap-y-4 py-14 sm:grid-cols-2 lg:grid-cols-3">
+    {benefits.map((b) => (
+      <p class="flex items-center gap-3 border-b border-stone-line pb-4"><Icon name="check" class="text-brass-ink" /><span>{b}</span></p>
+    ))}
+  </section>
+
+  <section id="listino" class="wrap pb-16">
+    <p class="eyebrow text-brass-ink">Listino professionale indicativo</p>
+    <div class="mt-5 grid gap-px bg-stone-line sm:grid-cols-3">
+      {config.trade_tiers_demo.map((t) => (
+        <div class="bg-white p-6">
+          <p class="font-heading text-xl">{t.label}</p>
+          <p class="mt-2 font-mono text-sm text-moss">da {t.min_m2} m² · −{Math.round(t.discount * 100)}%</p>
+        </div>
+      ))}
+    </div>
+    <DemoNote always class="mt-3" text="Scontistiche dimostrative: il listino definitivo viene comunicato dopo la registrazione." />
+  </section>
+
+  <section class="bg-forest-deep py-20 text-sand">
+    <div class="wrap grid gap-14 lg:grid-cols-2">
+      <div>
+        <p class="eyebrow text-brass">Registrazione professionale</p>
+        <h2 class="mb-8 mt-3 text-3xl">Accedi al listino professionale</h2>
+        <LeadForm
+          dark
+          kind="professional_registration"
+          submitLabel="Richiedi accesso"
+          fields={[
+            { name: 'name', label: 'Nome', required: true, half: true },
+            { name: 'company', label: 'Studio / azienda', required: true, half: true },
+            { name: 'email', label: 'Email', type: 'email', required: true, half: true },
+            { name: 'phone', label: 'Telefono', type: 'tel', half: true },
+            { name: 'role', label: 'Professione', options: roles, required: true },
+            { name: 'vat', label: 'Partita IVA', half: true },
+            { name: 'city', label: 'Città', half: true },
+          ]}
+        />
+      </div>
+      <div id="progetto">
+        <p class="eyebrow text-brass">Invia un progetto</p>
+        <h2 class="mb-8 mt-3 text-3xl">Preventivo per capitolato</h2>
+        <LeadForm
+          dark
+          kind="project_submission"
+          submitLabel="Invia il progetto"
+          fields={[
+            { name: 'name', label: 'Nome', required: true, half: true },
+            { name: 'email', label: 'Email', type: 'email', required: true, half: true },
+            { name: 'sqm', label: 'Metratura stimata (m²)', half: true },
+            { name: 'city', label: 'Località', half: true },
+            { name: 'message', label: 'Descrizione, tempistiche, requisiti', textarea: true },
+          ]}
+        />
+      </div>
+    </div>
+  </section>
+
+  <section id="installatori" class="wrap grid gap-12 py-20 lg:grid-cols-2">
+    <div>
+      <p class="eyebrow text-brass-ink">Rete installatori</p>
+      <h2 class="mt-3 text-4xl">Sei un installatore?</h2>
+      <p class="mt-5 max-w-lg leading-relaxed text-moss">Stiamo costruendo una rete di posatori qualificati in Italia. Candidati: ti contatteremo per una verifica.</p>
+    </div>
+    <LeadForm
+      kind="installer_network"
+      submitLabel="Candidati"
+      fields={[
+        { name: 'name', label: 'Nome / ragione sociale', required: true, half: true },
+        { name: 'email', label: 'Email', type: 'email', required: true, half: true },
+        { name: 'phone', label: 'Telefono', type: 'tel', half: true },
+        { name: 'city', label: 'Zona operativa', half: true },
+        { name: 'message', label: 'Esperienza e referenze', textarea: true },
+      ]}
+    />
+  </section>
+</Base>

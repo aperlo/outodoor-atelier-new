@@ -1,0 +1,112 @@
+---
+import Base from '../../layouts/Base.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import DemoNote from '../../components/DemoNote.astro';
+import Icon from '../../components/Icon.astro';
+import ProductBuy from '../../components/islands/ProductBuy.tsx';
+import { products, config, type Product } from '../../lib/quote';
+import { site } from '../../config/site';
+import { img, Q, useLabels, collectionLabels, availabilityLabels, P } from '../../data/content';
+import { eur, num } from '../../lib/format';
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug }, props: { p } }));
+}
+const { p } = Astro.props as { p: Product };
+const collection = collectionLabels[p.collection];
+const gallery = [p.image, img(Q.macro, 1400), img(Q.macro2, 1400)];
+const related = products.filter((x) => x.slug !== p.slug && x.uses.some((u) => p.uses.includes(u))).slice(0, 3);
+const specs: [string, string][] = [
+  ['Altezza del filo', `${p.height_mm} mm`],
+  ['Aspetto', p.appearance],
+  ['Morbidezza', p.softness],
+  ['Tipo di fibra', p.fibre_type],
+  ['Densità', p.density],
+  ['Peso', `${num(p.weight_kg_m2)} kg/m²`],
+  ['Drenaggio', p.drainage],
+  ['Larghezza rotolo', `${config.roll_width_m} m`],
+  ['Lunghezza rotolo standard', `${config.roll_length_m} m`],
+];
+const documents = p.documents.length ? p.documents : ['Scheda tecnica', 'Istruzioni di posa', 'Dichiarazioni del produttore'];
+// I dati strutturati di prodotto si pubblicano solo con prezzi definitivi.
+const jsonLd = config.demo_values
+  ? undefined
+  : { '@context': 'https://schema.org', '@type': 'Product', name: p.name, description: p.tagline, offers: { '@type': 'Offer', priceCurrency: 'EUR', price: p.price_m2 } };
+---
+<Base
+  title={`${p.name} — erba sintetica ${collection}`}
+  description={`${p.tagline} ${eur(p.price_m2)}/m² + IVA. Campione gratuito, taglio su misura.`}
+  jsonLd={jsonLd}
+>
+  <div class="wrap pb-16 pt-28">
+    <nav aria-label="Percorso" class="text-xs text-moss">
+      <a href="/collezione" class="underline">Collezione</a> / <a href={`/collezione?collezione=${p.collection}`} class="underline">{collection}</a> / <span>{p.name}</span>
+    </nav>
+
+    <div class="mt-6 grid gap-10 lg:grid-cols-2">
+      <div>
+        <img src={gallery[0]} alt={p.name} width="1400" height="1050" fetchpriority="high" class="aspect-[4/3] w-full bg-ivory object-cover" />
+        <div class="mt-3 grid grid-cols-2 gap-3">
+          {gallery.slice(1).map((g) => <img src={g.replace('w=1400', 'w=700')} alt="" loading="lazy" decoding="async" class="aspect-[4/3] w-full object-cover" />)}
+        </div>
+        <p class="mt-3 text-xs text-moss">Le immagini sono riferimenti di ambientazione; la texture reale è nel campione.</p>
+      </div>
+
+      <div>
+        <p class="eyebrow text-brass-ink">{collection}{site.supplier.show && ` · ${P}`}</p>
+        <h1 class="mt-3 text-4xl leading-tight sm:text-5xl">{p.name}</h1>
+        <p class="mt-3 text-lg text-moss">{p.tagline}</p>
+        <div class="mt-6">
+          <p class="font-mono text-2xl">{eur(p.price_m2)}<span class="text-sm text-moss">/m² + IVA</span></p>
+          <p class="font-mono text-sm text-moss">{eur(p.price_m2 * (1 + config.vat_rate))}/m² IVA incl.</p>
+        </div>
+        <p class="mt-3 text-sm text-moss">{site.showAvailability ? availabilityLabels[p.availability] : site.deliveryNote}</p>
+
+        <ProductBuy client:load slug={p.slug} name={p.name} price={p.price_m2} />
+
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button type="button" class="chip inline-flex items-center gap-2" data-sample={p.slug} data-name={p.name} aria-pressed="false"><Icon name="box" size={16} /> Campione gratuito</button>
+          <button type="button" class="chip inline-flex items-center gap-2" data-compare={p.slug} aria-pressed="false"><Icon name="compare" size={16} /> Confronta</button>
+        </div>
+        <p class="mt-5 text-xs text-moss">Nessun minimo d'ordine. Spedizione calcolata con il CAP nel carrello.</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="bg-ivory py-16">
+    <div class="wrap grid gap-12 lg:grid-cols-2">
+      <div>
+        <p class="eyebrow text-brass-ink">La storia</p>
+        <p class="mt-3 leading-relaxed">{p.story}</p>
+        <p class="eyebrow mt-9 text-brass-ink">Ideale per</p>
+        <div class="mt-3 flex flex-wrap gap-2">
+          {p.uses.map((u) => <span class="border border-stone bg-white px-3 py-1.5 text-sm">{useLabels[u]}</span>)}
+        </div>
+        <p class="eyebrow mt-9 text-brass-ink">Cura &amp; manutenzione</p>
+        <p class="mt-3 leading-relaxed text-moss">Spazzolatura periodica contropelo, rimozione di foglie e detriti, risciacquo con acqua. Le indicazioni definitive sono quelle della documentazione del produttore.</p>
+      </div>
+      <div>
+        <p class="eyebrow text-brass-ink">Scheda tecnica</p>
+        <dl class="mt-3 divide-y divide-stone-line border-y border-stone-line text-sm">
+          {specs.map(([k, v]) => (
+            <div class="flex justify-between gap-6 py-3"><dt class="text-moss">{k}</dt><dd class="text-right font-mono">{v}</dd></div>
+          ))}
+        </dl>
+        {!p.specs_verified && <DemoNote always class="mt-3" text="Specifiche dimostrative in attesa della scheda tecnica ufficiale del produttore. Non sono indicate certificazioni o garanzie finché non verificate." />}
+        <p class="eyebrow mt-9 text-brass-ink">Documentazione</p>
+        <ul class="mt-3 space-y-2 text-sm">
+          {documents.map((d) => <li class="flex items-center gap-2"><Icon name="file" size={16} class="text-brass-ink" /> {d} <span class="text-moss">— disponibile su richiesta</span></li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {related.length > 0 && (
+    <section class="wrap py-16">
+      <h2 class="text-3xl">Potrebbe interessarti</h2>
+      <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {related.map((r) => <ProductCard p={r} />)}
+      </div>
+    </section>
+  )}
+</Base>
