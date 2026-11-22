@@ -1,0 +1,57 @@
+[
+  {
+    "id": "esempio-terrazzo-milano",
+    "example": true,
+    "name": "Marta B.",
+    "city": "Milano",
+    "space": "Terrazzo · 28 m²",
+    "product": "portofino-35",
+    "rating": 5,
+    "date": null,
+    "text": "Ho scelto tra tre campioni guardandoli alla luce del mio terrazzo, la sera. Il preventivo coincideva con la fattura, spedizione compresa. Posato da noi in un sabato."
+  },
+  {
+    "id": "esempio-giardino-cane-bergamo",
+    "example": true,
+    "name": "Luca F.",
+    "city": "Bergamo",
+    "space": "Giardino con cane · 45 m²",
+    "product": "brera-30-pet",
+    "rating": 5,
+    "date": null,
+    "text": "Il cane ci corre tutto il giorno. La sera basta una sciacquata con la gomma e non resta nessun odore. Finito il fango in casa."
+  },
+  {
+    "id": "esempio-piscina-roma",
+    "example": true,
+    "name": "Claudia M.",
+    "city": "Roma",
+    "space": "Bordo piscina · 36 m²",
+    "product": "como-lago-40",
+    "rating": 5,
+    "date": null,
+    "text": "Volevo qualcosa di morbido a piedi nudi e non il solito verde acceso. Il campione salvia era esattamente il tono che cercavo."
+  },
+  {
+    "id": "esempio-balcone-torino",
+    "example": true,
+    "name": "Davide R.",
+    "city": "Torino",
+    "space": "Balcone · 6 m²",
+    "product": "navigli-25",
+    "rating": 4,
+    "date": null,
+    "text": "Temevo che per pochi metri nessuno si prendesse la briga. Taglio su misura, kit di posa incluso. Una stella in meno solo per la consegna, arrivata un giorno dopo il previsto."
+  },
+  {
+    "id": "esempio-hotel-riviera",
+    "example": true,
+    "name": "Studio di architettura",
+    "city": "Riviera ligure",
+    "space": "Boutique hotel · 220 m²",
+    "product": "capri-38",
+    "rating": 5,
+    "date": null,
+    "text": "Campionature grandi, schede tecniche e un unico referente per tutto il cantiere. Posa programmata fuori stagione, come chiesto."
+  }
+]

@@ -1,68 +1,152 @@
 ---
 import Base from '../layouts/Base.astro';
-import PageHero from '../components/PageHero.astro';
 import ProductCard from '../components/ProductCard.astro';
+import CanvasItem from '../components/CanvasItem.astro';
 import DemoNote from '../components/DemoNote.astro';
 import Icon from '../components/Icon.astro';
 import { products, config } from '../lib/quote';
-import { img, Q, useLabels, collectionLabels, heightBands } from '../data/content';
+import { nav, tones, softnessLabels, useGroups, collectionLabels } from '../data/content';
 
-const appearances = [...new Set(products.map((p) => p.appearance))];
-const maxPrice = Math.ceil(Math.max(...products.map((p) => p.price_m2)));
-const selects: { name: string; label: string; options: [string, string][] }[] = [
-  { name: 'use', label: 'Destinazione', options: Object.entries(useLabels) },
-  { name: 'height', label: 'Altezza', options: Object.entries(heightBands).map(([k, v]) => [k, v[2]]) },
-  { name: 'appearance', label: 'Aspetto', options: appearances.map((a) => [a, a]) },
-  { name: 'softness', label: 'Morbidezza', options: [['alta', 'Alta · piedi nudi'], ['media', 'Media'], ['tecnica', 'Tecnica · calpestio intenso']] },
-  { name: 'drainage', label: 'Drenaggio', options: [['elevata', 'Elevato'], ['standard', 'Standard']] },
-  { name: 'collection', label: 'Collezione', options: Object.entries(collectionLabels) },
+// Disposizione sulla tela: quattro colonne, file sfalsate, campioni di misure diverse,
+// come materiali appoggiati su un tavolo. Coordinate in pixel a zoom 1.
+const COLS = 4;
+const sizes = [340, 270, 310, 380, 290, 330, 360, 280, 320, 300, 350, 300];
+const jitterX = [0, 70, 20, 60, 50, 0, 80, 10, 30, 90, 0, 60];
+const jitterY = [40, 0, 110, 20, 0, 90, 30, 120, 60, 0, 100, 30];
+const layout = products.map((p, i) => ({
+  p,
+  size: sizes[i % sizes.length],
+  x: 120 + (i % COLS) * 540 + jitterX[i % jitterX.length],
+  y: 100 + Math.floor(i / COLS) * 600 + jitterY[i % jitterY.length],
+}));
+const WORLD_W = Math.max(...layout.map((l) => l.x + l.size)) + 140;
+const WORLD_H = Math.max(...layout.map((l) => l.y + l.size)) + 260;
+
+const groups = [
+  { key: 'softness', label: 'Morbidezza', options: Object.entries(softnessLabels).map(([v, l]) => ({ v, l })) },
+  { key: 'use', label: 'Uso', options: Object.entries(useGroups).map(([v, g]) => ({ v, l: g.label })) },
+  { key: 'tone', label: 'Tono di verde', options: Object.entries(tones).map(([v, t]) => ({ v, l: t.label, color: t.color })) },
 ];
+const useMap = Object.fromEntries(Object.entries(useGroups).map(([k, g]) => [k, g.uses]));
 ---
 <Base
   title="Collezione — erba sintetica premium"
-  description="Esplora la collezione: filtra per altezza, utilizzo, aspetto, morbidezza, drenaggio e prezzo. Prezzi chiari al metro quadro."
+  description="Esplora la collezione come una galleria di materiali: filtra per morbidezza, uso e tono di verde. Prezzi chiari al metro quadro."
+  page="collezione"
+  samplesCta={false}
 >
-  <PageHero
-    overline="La Collezione"
-    title="Superfici scelte una a una, per ogni modo di vivere l'esterno."
-    intro="Prezzi trasparenti al metro quadro, nessun minimo d'ordine, taglio su misura. Dal balcone di 6 m² al resort."
-    image={img(Q.macro2)}
-  />
+  <section class="bg-ivory pb-6 pt-28">
+    <div class="wrap">
+      <p class="eyebrow text-brass-ink">La Collezione</p>
+      <h1 class="mt-3 max-w-3xl text-3xl leading-tight sm:text-4xl">Superfici scelte una a una, per ogni modo di vivere l'esterno.</h1>
+      <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+        <div class="inline-flex border border-stone bg-white" role="group" aria-label="Vista">
+          <button type="button" class="px-4 py-2.5 text-sm" data-view-btn="canvas" aria-pressed="true">Tela</button>
+          <button type="button" class="px-4 py-2.5 text-sm" data-view-btn="grid" aria-pressed="false">Griglia con prezzi</button>
+        </div>
+        <p class="text-sm"><span data-count class="font-mono font-semibold">{products.length}</span> superfici</p>
+        <div data-active-filters class="flex flex-wrap gap-2"></div>
+        {config.demo_values && <p class="text-xs text-moss">Catalogo dimostrativo · {products.length} di {config.catalogue_size_target} modelli previsti</p>}
+      </div>
+    </div>
+  </section>
 
-  <div class="wrap py-14" data-catalog>
-    <form data-filters class="grid gap-4 border border-stone-line bg-white p-5 sm:grid-cols-2 lg:grid-cols-4">
-      <div class="sm:col-span-2 lg:col-span-4">
-        <label for="f-q" class="label text-moss">Cerca</label>
-        <div class="relative">
-          <Icon name="search" size={16} class="absolute left-3 top-1/2 -translate-y-1/2 text-moss" />
-          <input id="f-q" name="q" type="search" placeholder="Modello, ambiente, aspetto…" class="field pl-10" />
+  <div data-collection data-view="canvas" data-use-map={JSON.stringify(useMap)} data-world={`${WORLD_W}x${WORLD_H}`}>
+    <!-- Vista a tela -->
+    <div data-canvas-view class="relative">
+      <div
+        class="canvas"
+        data-canvas
+        tabindex="0"
+        role="region"
+        aria-label="Tela della collezione. Trascina o scorri per esplorare, usa più e meno per lo zoom."
+        style="--z:0.8"
+      >
+        <div class="canvas-size" style={`width:calc(${WORLD_W}px * var(--z));height:calc(${WORLD_H}px * var(--z))`}>
+          <div class="canvas-world" style={`width:${WORLD_W}px;height:${WORLD_H}px`}>
+            {layout.map((l, i) => <CanvasItem p={l.p} x={l.x} y={l.y} size={l.size} eager={i < 6} />)}
+          </div>
         </div>
       </div>
-      {selects.map((s) => (
-        <div>
-          <label for={`f-${s.name}`} class="label text-moss">{s.label}</label>
-          <select id={`f-${s.name}`} name={s.name} class="field">
-            <option value="">Tutti</option>
-            {s.options.map(([v, l]) => <option value={v}>{l}</option>)}
-          </select>
+      <div data-canvas-empty hidden class="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
+        <div class="pointer-events-auto bg-sand p-6 text-center shadow-[0_12px_36px_rgb(23_40_32/0.18)]">
+          <p class="font-heading text-xl">Nessuna superficie con questi filtri.</p>
+          <button type="button" class="btn-line mt-4" data-reset-filters>Azzera i filtri</button>
         </div>
-      ))}
-      <div class="sm:col-span-2">
-        <label for="f-price" class="label text-moss">Prezzo massimo · <span data-price-out class="normal-case tracking-normal">tutti</span></label>
-        <input id="f-price" name="maxPrice" type="range" min="0" max={maxPrice} step="1" value="0" class="w-full accent-[#ad9870]" />
       </div>
-    </form>
-
-    <div class="mt-5 flex flex-wrap items-center gap-4 text-sm">
-      <p><span data-result-count class="font-mono font-semibold">{products.length}</span> superfici</p>
-      <button type="button" data-reset hidden class="underline">Azzera filtri</button>
-      {config.demo_values && <p class="ml-auto text-xs text-moss">Catalogo dimostrativo · {products.length} di {config.catalogue_size_target} modelli previsti</p>}
+      <div class="canvas-controls" data-canvas-controls>
+        <span class="hidden text-xs text-moss sm:inline">Trascina per esplorare</span>
+        <button type="button" class="canvas-zoom" data-zoom="out" aria-label="Riduci lo zoom">−</button>
+        <button type="button" class="canvas-zoom" data-zoom="in" aria-label="Aumenta lo zoom">+</button>
+        <button type="button" class="canvas-zoom text-[11px]" data-zoom="fit" aria-label="Mostra tutta la collezione">Tutto</button>
+      </div>
     </div>
 
-    <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {products.map((p) => <ProductCard p={p} />)}
+    <!-- Vista a griglia -->
+    <div data-grid-view hidden class="wrap py-10">
+      <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {products.map((p) => <ProductCard p={p} />)}
+      </div>
+      <p data-grid-empty hidden class="mt-10 text-center text-moss">Nessuna superficie corrisponde ai filtri. <button type="button" class="underline" data-reset-filters>Azzera i filtri</button></p>
+      <DemoNote class="mt-8" />
     </div>
-    <p data-empty hidden class="mt-10 text-center text-moss">Nessuna superficie corrisponde ai filtri. Prova ad allargare la ricerca.</p>
-    <DemoNote class="mt-8" />
   </div>
+
+  <!-- Barra in basso: menu, filtri, campioni -->
+  <div class="pill-bar" aria-label="Azioni della collezione">
+    <button type="button" class="pill" data-open-sheet="menu">Menu</button>
+    <button type="button" class="pill pill-strong" data-open-sheet="filters">Filtra<span data-filter-count class="font-mono"></span></button>
+    <a href="/campioni" class="pill"><Icon name="box" size={16} /> Campioni <span class="font-mono"><span data-samples-count>0</span>/{config.sample_service.max_samples}</span></a>
+  </div>
+
+  <!-- Pannello filtri -->
+  <div class="sheet" data-sheet="filters" data-open="false" inert>
+    <div class="sheet-backdrop" data-close-sheet></div>
+    <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="filters-title">
+      <div class="flex items-center justify-between">
+        <h2 id="filters-title" class="text-2xl">Filtra la collezione</h2>
+        <button type="button" class="size-10 text-2xl leading-none" data-close-sheet aria-label="Chiudi">×</button>
+      </div>
+      <p class="mt-1 text-sm text-moss">Scegli come vuoi che sia il prato, non le sue specifiche.</p>
+      {groups.map((g) => (
+        <fieldset class="mt-6">
+          <legend class="label text-moss">{g.label}</legend>
+          <div class="flex flex-wrap gap-2">
+            {g.options.map((o) => (
+              <button type="button" class="chip inline-flex items-center gap-2" data-filter={g.key} data-value={o.v} aria-pressed="false">
+                {'color' in o && <span class="inline-block size-3.5 rounded-full" style={`background:${o.color}`}></span>}
+                {o.l}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      ))}
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+        <button type="button" class="btn-forest flex-1" data-close-sheet>Mostra <span data-count>{products.length}</span> superfici</button>
+        <button type="button" class="btn-line" data-reset-filters>Azzera</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pannello menu -->
+  <div class="sheet" data-sheet="menu" data-open="false" inert>
+    <div class="sheet-backdrop" data-close-sheet></div>
+    <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="menu-title">
+      <div class="flex items-center justify-between">
+        <h2 id="menu-title" class="text-2xl">Menu</h2>
+        <button type="button" class="size-10 text-2xl leading-none" data-close-sheet aria-label="Chiudi">×</button>
+      </div>
+      <nav class="mt-4 grid gap-x-8 sm:grid-cols-2" aria-label="Menu della collezione">
+        {nav.map((item) => (
+          <a href={item.to} class="flex items-center justify-between border-b border-stone-line py-3 font-heading text-xl">{item.label}<Icon name="arrow" size={16} /></a>
+        ))}
+        <a href="/contatti" class="flex items-center justify-between border-b border-stone-line py-3 font-heading text-xl">Contatti<Icon name="arrow" size={16} /></a>
+      </nav>
+      <p class="mt-5 text-xs text-moss">Collezioni: {Object.values(collectionLabels).join(' · ')}</p>
+    </div>
+  </div>
+
+  <script>
+    import '../scripts/collection.ts';
+  </script>
 </Base>

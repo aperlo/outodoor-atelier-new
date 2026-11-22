@@ -67,6 +67,30 @@ export const heightBands: Record<string, [number, number, string]> = {
   tall: [36, 99, 'Oltre 35 mm'],
 };
 
+// Tono di verde: filtro "sensoriale" della collezione. Il colore è solo un riferimento visivo.
+export const tones: Record<string, { label: string; color: string }> = {
+  naturale: { label: 'Naturale', color: '#6d8a4a' },
+  salvia: { label: 'Salvia', color: '#8fa38a' },
+  brillante: { label: 'Brillante', color: '#5c9e3a' },
+  oliva: { label: 'Oliva', color: '#6e7a38' },
+  smeraldo: { label: 'Smeraldo', color: '#2e8a5a' },
+};
+
+export const softnessLabels: Record<string, string> = {
+  alta: 'Alta · piedi nudi',
+  media: 'Media',
+  tecnica: 'Tecnica · calpestio intenso',
+};
+
+// "Uso" raggruppa le destinazioni del catalogo in cinque scelte comprensibili.
+export const useGroups: Record<string, { label: string; uses: string[] }> = {
+  giardino: { label: 'Giardino', uses: ['garden'] },
+  piscina: { label: 'Piscina', uses: ['pool'] },
+  terrazza: { label: 'Terrazza', uses: ['terrace', 'rooftop', 'balcony'] },
+  animali: { label: 'Animali', uses: ['pet'] },
+  commerciale: { label: 'Commerciale', uses: ['commercial', 'event', 'indoor', 'public'] },
+};
+
 export const worlds = [
   { id: 'giardini', title: 'Giardini privati', line: "Il prato che accompagna la vita della villa, tutto l'anno.", image: Q.heroVilla, href: '/settori/erba-sintetica-per-giardini' },
   { id: 'terrazze', title: 'Terrazze & Rooftop', line: 'Superfici leggere e drenanti, sopra la città.', image: Q.rooftop, href: '/settori/erba-sintetica-per-terrazzi' },

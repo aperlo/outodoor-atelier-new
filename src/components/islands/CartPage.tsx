@@ -1,7 +1,7 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { useStore } from '@nanostores/preact';
 import { quote, config } from '../../lib/quote';
-import { cart } from '../../lib/stores';
+import { cart, deliveryCap } from '../../lib/stores';
 import { resize } from '../../data/content';
 import { eur, num, isCap } from '../../lib/format';
 import QuoteSummary from './QuoteSummary';
@@ -9,7 +9,14 @@ import LeadFormIsland from './LeadFormIsland';
 
 export default function CartPage() {
   const lines = useStore(cart);
-  const [cap, setCap] = useState(() => new URLSearchParams(location.search).get('cap') ?? '');
+  // CAP: dall'indirizzo (?cap=) oppure l'ultimo inserito sul sito.
+  const storedCap = useStore(deliveryCap);
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(location.search).get('cap');
+    if (fromUrl) deliveryCap.set(fromUrl);
+  }, []);
+  const cap = storedCap;
+  const setCap = (v: string) => deliveryCap.set(v);
   const [sent, setSent] = useState(false);
 
   if (sent) {

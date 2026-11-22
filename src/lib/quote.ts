@@ -60,6 +60,27 @@ export function geometricWastePct(sections: Section[], roll = ROLL) {
   return area > 0 ? Math.max(0, (material / area - 1) * 100) : 0;
 }
 
+/**
+ * Materiale da acquistare per un rettangolo di misure libere, con teli larghi `roll` metri
+ * posati nel verso che consuma meno.
+ */
+export function materialFor(length: number, width: number, roll = ROLL) {
+  const area = Math.max(0, length) * Math.max(0, width);
+  if (area <= 0) return { area: 0, material: 0, strips: 0, stripLength: 0, seams: 0 };
+  const optionA = { strips: Math.ceil(width / roll), stripLength: length };
+  const optionB = { strips: Math.ceil(length / roll), stripLength: width };
+  const a = optionA.strips * roll * optionA.stripLength;
+  const b = optionB.strips * roll * optionB.stripLength;
+  const best = a <= b ? optionA : optionB;
+  return {
+    area,
+    material: Math.round(Math.min(a, b) * 10) / 10,
+    strips: best.strips,
+    stripLength: best.stripLength,
+    seams: (best.strips - 1) * best.stripLength,
+  };
+}
+
 /** Sfrido suggerito: il maggiore tra il valore di base e quello geometrico. */
 export function suggestedWaste(sections: Section[], totalMode: boolean) {
   if (totalMode) return config.default_waste_pct;

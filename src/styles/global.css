@@ -166,3 +166,324 @@
   text-decoration: underline;
   white-space: nowrap;
 }
+
+/* ---------- Collezione: tela navigabile ---------- */
+.canvas {
+  position: relative;
+  height: clamp(460px, calc(100svh - 15rem), 860px);
+  overflow: auto;
+  overscroll-behavior-x: contain;
+  cursor: grab;
+  background: #ece7dc;
+  scrollbar-width: thin;
+}
+.canvas.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+.canvas.is-dragging .canvas-item {
+  pointer-events: none;
+}
+.canvas:focus-visible {
+  outline-offset: -3px;
+}
+.canvas-size {
+  position: relative;
+}
+.canvas-world {
+  position: absolute;
+  inset: 0 auto auto 0;
+  transform: scale(var(--z));
+  transform-origin: 0 0;
+  /* Punti leggeri, come il piano di un tavolo da progetto. */
+  background-image: radial-gradient(rgb(23 40 32 / 0.09) 1px, transparent 1.2px);
+  background-size: 32px 32px;
+}
+.canvas-item {
+  position: absolute;
+  display: block;
+  color: var(--color-forest-deep);
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+.canvas-tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--color-ivory);
+  box-shadow: 0 1px 2px rgb(23 40 32 / 0.08), 0 22px 44px -18px rgb(23 40 32 / 0.35);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+}
+.canvas-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Velatura del tono di verde: rende leggibile la varietà dei verdi anche con foto simili. */
+.canvas-tint {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: color;
+  opacity: 0.38;
+}
+.canvas-height {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  background: var(--color-sand);
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.canvas-placard {
+  display: block;
+  margin-top: 1rem;
+  border-left: 1px solid var(--color-brass);
+  padding-left: 0.85rem;
+}
+.canvas-item:hover .canvas-tile,
+.canvas-item:focus-visible .canvas-tile {
+  transform: translateY(-6px) rotate(-0.4deg);
+  box-shadow: 0 1px 2px rgb(23 40 32 / 0.08), 0 34px 60px -20px rgb(23 40 32 / 0.45);
+}
+.canvas-item.is-dim {
+  opacity: 0.14;
+  filter: grayscale(1);
+  pointer-events: none;
+}
+/* In basso a destra, fissi sullo schermo come la barra a pillole. */
+.canvas-controls {
+  position: fixed;
+  z-index: 45;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.canvas-zoom {
+  display: inline-flex;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.6rem;
+  background: var(--color-sand);
+  border: 1px solid var(--color-stone);
+  font-size: 18px;
+}
+@media (max-width: 767px) {
+  .canvas-controls {
+    bottom: calc(4.6rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+.canvas-zoom:hover {
+  border-color: var(--color-brass);
+}
+@media (prefers-reduced-motion: reduce) {
+  .canvas-item,
+  .canvas-tile {
+    transition: none;
+  }
+}
+
+/* ---------- Barra a pillole e pannelli ---------- */
+.pill-bar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 45;
+  display: flex;
+  gap: 0.25rem;
+  transform: translateX(-50%);
+  background: var(--color-forest-deep);
+  padding: 0.3rem;
+  border-radius: 999px;
+  box-shadow: 0 14px 36px rgb(23 40 32 / 0.32);
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.6rem 1.1rem;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-sand);
+  white-space: nowrap;
+}
+.pill:hover {
+  background: rgb(250 248 245 / 0.12);
+}
+.pill-strong {
+  background: var(--color-brass);
+  color: var(--color-forest-deep);
+}
+.pill-strong:hover {
+  background: #bfab85;
+}
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  visibility: hidden;
+  transition: visibility 0s 0.35s;
+}
+.sheet[data-open="true"] {
+  visibility: visible;
+  transition-delay: 0s;
+}
+.sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(23 40 32 / 0.45);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.sheet[data-open="true"] .sheet-backdrop {
+  opacity: 1;
+}
+.sheet-panel {
+  position: absolute;
+  inset: auto 0 0 0;
+  max-height: 85svh;
+  overflow-y: auto;
+  background: var(--color-sand);
+  padding: 1.5rem max(1.25rem, env(safe-area-inset-right)) calc(1.5rem + env(safe-area-inset-bottom, 0px)) max(1.25rem, env(safe-area-inset-left));
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (min-width: 768px) {
+  .sheet-panel {
+    left: 50%;
+    right: auto;
+    bottom: 5.5rem;
+    width: min(40rem, calc(100vw - 2rem));
+    transform: translate(-50%, 1.5rem);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+  }
+  .sheet[data-open="true"] .sheet-panel {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+.sheet[data-open="true"] .sheet-panel {
+  transform: translateY(0);
+}
+
+/* ---------- Mini-carrello ---------- */
+.cart-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  visibility: hidden;
+  transition: visibility 0s 0.35s;
+}
+.cart-drawer[data-open="true"] {
+  visibility: visible;
+  transition-delay: 0s;
+}
+.cart-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(23 40 32 / 0.4);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.cart-drawer[data-open="true"] .cart-backdrop {
+  opacity: 1;
+}
+.cart-panel {
+  position: absolute;
+  inset: 0 0 0 auto;
+  display: flex;
+  width: min(28rem, 100vw);
+  flex-direction: column;
+  background: var(--color-sand);
+  box-shadow: -24px 0 60px rgb(23 40 32 / 0.2);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  transform: translateX(100%);
+  transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  outline: none;
+}
+.cart-drawer[data-open="true"] .cart-panel {
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sheet-panel,
+  .cart-panel,
+  .sheet-backdrop,
+  .cart-backdrop {
+    transition: none;
+  }
+}
+
+/* ---------- Invito ai campioni, sempre visibile ---------- */
+.samples-cta {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 44;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 999px;
+  background: var(--color-brass);
+  color: var(--color-forest-deep);
+  padding: 0.8rem 1.2rem;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 14px 36px rgb(23 40 32 / 0.28);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.samples-cta:hover {
+  background: #bfab85;
+  transform: translateY(-2px);
+}
+.samples-cta-count {
+  border-radius: 999px;
+  background: var(--color-forest-deep);
+  color: var(--color-sand);
+  padding: 0.1rem 0.5rem;
+}
+
+/* Elementi fissi in basso: nessuno deve coprirne un altro né il piè di pagina. */
+#toast-host {
+  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+@media (max-width: 767px) {
+  [data-compare-tray] {
+    bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+body[data-page="collezione"] [data-compare-tray] {
+  bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+}
+footer {
+  padding-bottom: 5rem;
+}
+
+/* ---------- Prima/dopo della home ---------- */
+[data-ba] {
+  --split: 50%;
+}
+[data-ba] .ba-after {
+  clip-path: inset(0 0 0 var(--split));
+}
+[data-ba] .ba-line {
+  left: var(--split);
+}
+[data-ba] input[type="range"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: ew-resize;
+}
+[data-ba]:has(input:focus-visible) .ba-knob {
+  outline: 2px solid var(--color-brass);
+  outline-offset: 3px;
+}

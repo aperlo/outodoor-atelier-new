@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import CartPage from '../components/islands/CartPage.tsx';
 ---
-<Base title="Carrello" description="Il tuo progetto The Outdoor Atelier: riepilogo e richiesta d'ordine." noindex>
+<Base title="Carrello" description="Il tuo progetto The Outdoor Atelier: riepilogo e richiesta d'ordine." noindex samplesCta={false}>
   <PageHero overline="Carrello" title="Il tuo progetto, pronto a partire." />
   <div class="wrap py-14">
     <CartPage client:only="preact">

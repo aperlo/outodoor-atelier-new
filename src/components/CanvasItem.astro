@@ -1,0 +1,42 @@
+---
+// Una superficie esposta sulla tela della collezione: campione grande + cartellino.
+import { collectionLabels, tones, resize } from '../data/content';
+import { eur } from '../lib/format';
+import type { Product } from '../lib/quote';
+
+interface Props {
+  p: Product;
+  x: number;
+  y: number;
+  size: number;
+  eager?: boolean;
+}
+const { p, x, y, size, eager = false } = Astro.props;
+const tone = tones[p.tone];
+---
+<a
+  href={`/superfici/${p.slug}`}
+  class="canvas-item"
+  draggable="false"
+  data-item
+  data-tone={p.tone}
+  data-softness={p.softness}
+  data-uses={p.uses.join(' ')}
+  data-collection={p.collection}
+  style={`left:${x}px;top:${y}px;width:${size}px`}
+>
+  <span class="canvas-tile">
+    <img src={resize(p.image, 700)} alt="" loading={eager ? "eager" : "lazy"} decoding="async" draggable="false" width="700" height="700" />
+    <span class="canvas-tint" style={`background:${tone.color}`}></span>
+    <span class="canvas-height">{p.height_mm} mm</span>
+  </span>
+  <span class="canvas-placard">
+    <span class="eyebrow block text-brass-ink">{collectionLabels[p.collection]}</span>
+    <span class="mt-1.5 block font-heading text-[26px] leading-tight">{p.name}</span>
+    <span class="mt-1 flex items-center gap-2 text-[13px] text-moss">
+      <span class="inline-block size-2.5 rounded-full" style={`background:${tone.color}`}></span>
+      {tone.label} · {p.appearance} · morbidezza {p.softness}
+    </span>
+    <span class="mt-2 block font-mono text-[13px]">{eur(p.price_m2)}/m² + IVA</span>
+  </span>
+</a>

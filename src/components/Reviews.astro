@@ -1,0 +1,74 @@
+---
+// Recensioni dei clienti.
+// Regole: se esiste almeno una recensione vera ("example": false) si mostrano solo quelle vere.
+// Altrimenti, finché il catalogo è dimostrativo e site.showExampleReviews è attivo, si mostrano
+// gli esempi, ognuno con l'etichetta ESEMPIO. Gli esempi non finiscono mai nei dati strutturati.
+import reviewsData from '../data/reviews.json';
+import { products } from '../lib/quote';
+import config from '../data/config.json';
+import { site } from '../config/site';
+
+interface Props {
+  /** Scheda prodotto: prima le recensioni di quel modello. */
+  productSlug?: string;
+  limit?: number;
+  tone?: 'light' | 'ivory';
+}
+const { productSlug, limit = 3, tone = 'ivory' } = Astro.props;
+
+type Review = (typeof reviewsData)[number];
+const real = reviewsData.filter((r) => !r.example);
+const usingExamples = real.length === 0;
+const pool: Review[] = usingExamples ? (config.demo_values && site.showExampleReviews ? reviewsData.filter((r) => r.example) : []) : real;
+
+const sorted = productSlug ? [...pool.filter((r) => r.product === productSlug), ...pool.filter((r) => r.product !== productSlug)] : pool;
+const list = sorted.slice(0, limit);
+const productName = (slug: string) => products.find((p) => p.slug === slug)?.name;
+
+// Media e conteggio solo sulle recensioni vere.
+const average = real.length ? real.reduce((s, r) => s + r.rating, 0) / real.length : null;
+const fmt = (n: number) => new Intl.NumberFormat('it-IT', { maximumFractionDigits: 1 }).format(n);
+const stars = (n: number) => '★'.repeat(n) + '☆'.repeat(5 - n);
+---
+{list.length > 0 && (
+  <section class={tone === 'ivory' ? 'bg-ivory py-20 lg:py-24' : 'py-16'} aria-labelledby="recensioni-title">
+    <div class="wrap">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p class="eyebrow text-brass-ink">Recensioni</p>
+          <h2 id="recensioni-title" class="mt-3 text-4xl leading-tight sm:text-5xl">Chi lo ha già posato.</h2>
+        </div>
+        {average !== null && (
+          <p class="text-sm"><span class="font-mono text-2xl">{fmt(average)}</span> su 5 · {real.length} recensioni verificate</p>
+        )}
+      </div>
+
+      {usingExamples && (
+        <p class="mt-6 flex items-start gap-3 border border-brass bg-white p-4 text-sm leading-relaxed">
+          <span class="shrink-0 bg-brass px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-forest-deep">Esempio</span>
+          <span>Recensioni di esempio, non scritte da clienti: mostrano dove e come compariranno le recensioni vere dopo le prime consegne.</span>
+        </p>
+      )}
+
+      <div class="mt-8 grid gap-5 md:grid-cols-3">
+        {list.map((r) => (
+          <figure class="relative flex flex-col border border-stone-line bg-white p-6">
+            {r.example && (
+              <span class="absolute right-4 top-4 border border-brass-ink px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-brass-ink">Esempio</span>
+            )}
+            <p class="text-lg leading-none tracking-[0.15em] text-brass-ink" aria-label={`${r.rating} su 5`}>{stars(r.rating)}</p>
+            <blockquote class="mt-4 flex-1 font-heading text-lg leading-relaxed">{r.text}</blockquote>
+            <figcaption class="mt-5 border-t border-stone-line pt-4 text-sm">
+              <span class="font-semibold">{r.name}</span><span class="text-moss"> · {r.city}</span>
+              <span class="mt-1 block text-xs text-moss">
+                {r.space}
+                {productName(r.product) && <> · <a href={`/superfici/${r.product}`} class="underline">{productName(r.product)}</a></>}
+                {r.date && <> · {r.date}</>}
+              </span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

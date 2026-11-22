@@ -8,6 +8,13 @@ const json = { encode: JSON.stringify, decode: JSON.parse };
 export const cart = persistentAtom<CartLine[]>('oa-cart', [], json);
 export const samples = persistentAtom<string[]>('oa-samples', [], json);
 export const compare = persistentAtom<string[]>('oa-compare', [], json);
+// Ultimo CAP di consegna inserito: evita di riscriverlo tra scheda prodotto e carrello.
+export const deliveryCap = persistentAtom<string>('oa-cap', '');
+
+/** Apre il mini-carrello (gestito da src/scripts/cart-drawer.ts). */
+export function openCartDrawer() {
+  window.dispatchEvent(new CustomEvent('oa:cart-open'));
+}
 
 export const MAX_COMPARE = 3;
 

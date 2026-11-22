@@ -1,10 +1,10 @@
 // Comportamenti comuni a tutte le pagine: intestazione, contatori, azioni sulle schede,
-// filtri del catalogo e invio dei moduli statici.
+// prima/dopo della home, mini-carrello e invio dei moduli statici.
 import { cart, samples, compare, toggle, MAX_COMPARE } from '../lib/stores';
 import { toast } from '../lib/toast';
 import { site } from '../config/site';
 import config from '../data/config.json';
-import { heightBands } from '../data/content';
+import './cart-drawer';
 
 const $ = <T extends Element>(sel: string, root: ParentNode = document) => root.querySelector<T>(sel);
 const $$ = <T extends Element>(sel: string, root: ParentNode = document) => [...root.querySelectorAll<T>(sel)];
@@ -29,6 +29,12 @@ function renderCounts() {
   });
   $$<HTMLElement>('[data-sample]').forEach((b) => b.setAttribute('aria-pressed', String(s.includes(b.dataset.sample!))));
   $$<HTMLElement>('[data-compare]').forEach((b) => b.setAttribute('aria-pressed', String(c.includes(b.dataset.compare!))));
+  // Invito ai campioni: mostra quanti ne sono già nel box.
+  const ctaCount = $<HTMLElement>('[data-samples-cta-count]');
+  if (ctaCount) {
+    ctaCount.hidden = s.length === 0;
+    ctaCount.textContent = `${s.length}/${MAX_SAMPLES}`;
+  }
   const tray = $<HTMLElement>('[data-compare-tray]');
   if (tray) {
     tray.hidden = c.length === 0 || location.pathname.startsWith('/confronta');
@@ -60,59 +66,11 @@ document.addEventListener('click', (e) => {
   if (target.closest('[data-compare-clear]')) compare.set([]);
 });
 
-/* Filtri del catalogo: le schede sono già nell'HTML, qui si nascondono quelle escluse. */
-const catalog = $<HTMLElement>('[data-catalog]');
-if (catalog) {
-  const form = $<HTMLFormElement>('[data-filters]', catalog)!;
-  const cards = $$<HTMLElement>('[data-card]', catalog);
-  const count = $('[data-result-count]', catalog)!;
-  const empty = $<HTMLElement>('[data-empty]', catalog)!;
-  const reset = $<HTMLElement>('[data-reset]', catalog)!;
-  const priceOut = $('[data-price-out]', catalog)!;
-
-  // Filtri iniziali dall'indirizzo, es. /collezione?collezione=natural-look
-  const params = new URLSearchParams(location.search);
-  for (const [key, field] of [['collezione', 'collection'], ['uso', 'use']] as const) {
-    const el = form.elements.namedItem(field) as HTMLSelectElement | null;
-    const v = params.get(key);
-    if (el && v) el.value = v;
-  }
-
-  const apply = () => {
-    const f = Object.fromEntries(new FormData(form)) as Record<string, string>;
-    const q = (f.q ?? '').trim().toLowerCase();
-    const maxPrice = Number(f.maxPrice ?? 0);
-    const band = f.height ? heightBands[f.height] : null;
-    let shown = 0;
-    for (const card of cards) {
-      const d = card.dataset;
-      const h = Number(d.height);
-      const ok =
-        (!q || d.text!.includes(q)) &&
-        (!band || (h >= band[0] && h <= band[1])) &&
-        (!f.use || d.uses!.split(' ').includes(f.use)) &&
-        (!f.appearance || d.appearance === f.appearance) &&
-        (!f.softness || d.softness === f.softness) &&
-        (!f.drainage || d.drainage === f.drainage) &&
-        (!f.collection || d.collection === f.collection) &&
-        (!maxPrice || Number(d.price) <= maxPrice);
-      card.hidden = !ok;
-      if (ok) shown++;
-    }
-    count.textContent = String(shown);
-    empty.hidden = shown > 0;
-    priceOut.textContent = maxPrice ? `fino a ${maxPrice} €/m²` : 'tutti';
-    const active = Object.entries(f).some(([k, v]) => (k === 'maxPrice' ? Number(v) > 0 : v !== ''));
-    reset.hidden = !active;
-  };
-  form.addEventListener('input', apply);
-  form.addEventListener('submit', (e) => e.preventDefault());
-  reset.addEventListener('click', () => {
-    form.reset();
-    apply();
-  });
-  apply();
-}
+/* Prima/dopo della home: il cursore sposta la linea di separazione. */
+$$<HTMLElement>('[data-ba]').forEach((box) => {
+  const range = $<HTMLInputElement>('input[type="range"]', box);
+  range?.addEventListener('input', () => box.style.setProperty('--split', `${range.value}%`));
+});
 
 /* Moduli statici: invio in background, poi pagina di conferma. */
 const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
