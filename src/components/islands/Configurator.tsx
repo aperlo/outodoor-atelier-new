@@ -8,6 +8,7 @@ import { toast } from '../../lib/toast';
 import { environments, useLabels, img, resize, demoNote } from '../../data/content';
 import { eur, num, uid, isCap } from '../../lib/format';
 import LeadFormIsland from './LeadFormIsland';
+import Esempio from './Esempio';
 
 const STEPS = ['Ambiente', 'Dimensioni', 'Superficie', 'Personalizza', 'Posa', 'Preventivo', 'Carrello'];
 const ROLL = config.roll_width_m;
@@ -203,17 +204,17 @@ export default function Configurator() {
 
               <div class="mt-8 grid gap-4 sm:grid-cols-4">
                 <div>
-                  <label for="cfg-waste" class="label text-moss">Sfrido (%)</label>
+                  <label for="cfg-waste" class="label text-moss">Materiale in più per i tagli (%)</label>
                   <input id="cfg-waste" type="number" min={0} max={100} class="field font-mono" value={waste} onInput={(e) => setWasteOverride(Math.max(0, Number(e.currentTarget.value)))} />
                 </div>
                 <div class="border border-stone-line bg-white p-4"><p class="eyebrow text-moss">Superficie netta</p><p class="mt-1 font-mono text-xl">{num(net)} m²</p></div>
                 <div class="border border-stone-line bg-white p-4"><p class="eyebrow text-moss">Da ordinare</p><p class="mt-1 font-mono text-xl">{num(sqm)} m²</p></div>
-                <div class="border border-stone-line bg-white p-4"><p class="eyebrow text-moss">Giunte stimate</p><p class="mt-1 font-mono text-xl">{num(seamM)} m</p></div>
+                <div class="border border-stone-line bg-white p-4"><p class="eyebrow text-moss">Giunte tra i teli</p><p class="mt-1 font-mono text-xl">{num(seamM)} m</p></div>
               </div>
               <p class="mt-3 text-xs leading-relaxed text-moss">
                 {totalMode
-                  ? `Sfrido suggerito ${suggested}%. Con i soli metri quadri non possiamo valutare la forma: per un calcolo più preciso inserisci le sezioni.`
-                  : `Sfrido suggerito ${suggested}%: i teli sono larghi ${ROLL} m, quindi una misura che non è multipla di ${ROLL} m richiede materiale in più${geometric > config.default_waste_pct ? ` (qui circa ${geometric}%)` : ''}.`}
+                  ? `Materiale in più suggerito: ${suggested}%. Con i soli metri quadri non possiamo valutare la forma: per un calcolo più preciso inserisci le sezioni.`
+                  : `Materiale in più suggerito: ${suggested}%. I teli sono larghi ${ROLL} m, quindi una misura che non è multipla di ${ROLL} m richiede materiale in più${geometric > config.default_waste_pct ? ` (qui circa ${geometric}%)` : ''}.`}
                 {wasteOverride !== null && wasteOverride !== suggested && <> <button type="button" class="underline" onClick={() => setWasteOverride(null)}>Usa il valore suggerito</button></>}
               </p>
 
@@ -232,7 +233,7 @@ export default function Configurator() {
           {step === 3 && (
             <section>
               <h2 class="text-3xl sm:text-4xl">La superficie giusta per {envObj.label.toLowerCase()}</h2>
-              <p class="mt-3 text-moss">In evidenza i modelli consigliati per l'ambiente scelto.</p>
+              <p class="mt-3 text-moss">In evidenza i modelli consigliati per l'ambiente scelto. Prezzi al m²<Esempio /></p>
               <div class="mt-8 grid gap-3 sm:grid-cols-2">
                 {sorted.map((p) => {
                   const rec = recommended.includes(p);
@@ -259,7 +260,7 @@ export default function Configurator() {
           {step === 4 && (
             <section>
               <h2 class="text-3xl sm:text-4xl">Personalizza il progetto</h2>
-              <p class="mt-3 text-moss">Gli accessori <b>richiesti</b> servono per una posa corretta; quelli consigliati e opzionali sono a tua scelta. Nulla viene aggiunto senza il tuo consenso.</p>
+              <p class="mt-3 text-moss">Gli accessori <b>richiesti</b> servono per una posa corretta; quelli consigliati e opzionali sono a tua scelta. Nulla viene aggiunto senza il tuo consenso. Prezzi<Esempio /></p>
               <label class="mt-6 flex items-center justify-between gap-4 border border-stone-line bg-white p-4">
                 <span>
                   <span class="block font-semibold">Taglio su misura</span>
@@ -329,6 +330,7 @@ export default function Configurator() {
                   )}
                   <div>
                     <p class="eyebrow text-moss">Tabella di riferimento</p>
+                    <p class="mt-1 text-xs text-moss">Fonte: tariffe indicative degli installatori comunicate dal produttore, ottobre 2026. Il prezzo vero arriva dopo il sopralluogo.</p>
                     <ul class="mt-2 divide-y divide-stone-line border-y border-stone-line text-sm">
                       {config.installation_zones.map((z) => (
                         <li key={z.id} class="flex justify-between py-2.5"><span>{z.label}</span><span class="font-mono">{eur(z.rate_min, 0)}–{eur(z.rate_max, 0)}/m²</span></li>
@@ -360,7 +362,7 @@ export default function Configurator() {
 
           {step === 6 && q && ql && (
             <section>
-              <h2 class="text-3xl sm:text-4xl">Il tuo preventivo, voce per voce.</h2>
+              <h2 class="text-3xl sm:text-4xl">Il tuo preventivo, voce per voce.<Esempio /></h2>
               <div class="mt-6 max-w-xs">
                 <label for="cfg-shipcap" class="label text-moss">CAP di consegna (per la spedizione)</label>
                 <input id="cfg-shipcap" class="field font-mono" inputMode="numeric" maxLength={5} placeholder="es. 00186" value={cap} onInput={(e) => setShipCap(e.currentTarget.value.replace(/\D/g, ''))} />
@@ -375,7 +377,7 @@ export default function Configurator() {
               </div>
               <div class="mt-4 flex items-end justify-between bg-forest-deep p-5 text-sand">
                 <div>
-                  <p class="eyebrow text-brass">Totale</p>
+                  <p class="eyebrow text-brass">Totale<Esempio /></p>
                   <p class="text-xs text-stone">IVA inclusa{q.shipping.status === 'calculated' ? '' : ' · spedizione esclusa'}</p>
                 </div>
                 <p class="font-mono text-3xl">{eur(q.total)}</p>
@@ -440,7 +442,7 @@ export default function Configurator() {
               {([
                 ['Ambiente', envObj.label, false],
                 ['Superficie da ordinare', `${num(sqm)} m²`, true],
-                ['Sfrido', `${num(waste)}%`, true],
+                ['Materiale in più', `${num(waste)}%`, true],
                 ['Superficie', product?.name ?? '—', false],
                 ['Accessori', String(accList.length), true],
                 ['Posa', install === 'pro' ? `Professionale${instCap ? ` · ${instCap}` : ''}` : 'Fai-da-te', false],
@@ -450,7 +452,7 @@ export default function Configurator() {
             </dl>
             <div class="mt-5 space-y-2 border-t border-stone-line pt-4 text-sm">
               <div class="flex justify-between"><span class="text-moss">Merce (IVA escl.)</span><span class="font-mono">{q ? eur(q.goods_subtotal) : '—'}</span></div>
-              <div class="flex justify-between font-semibold"><span>Totale IVA incl.</span><span class="font-mono">{q ? eur(q.total) : '—'}</span></div>
+              <div class="flex justify-between font-semibold"><span>Totale IVA incl.<Esempio /></span><span class="font-mono">{q ? eur(q.total) : '—'}</span></div>
               {q?.shipping.status !== 'calculated' && <p class="text-xs text-moss">Spedizione calcolata con il CAP al passo 6.</p>}
             </div>
             <p class="mt-5 text-xs leading-relaxed text-moss">Puoi ordinare anche pochi metri quadri: non c'è un minimo d'ordine.</p>

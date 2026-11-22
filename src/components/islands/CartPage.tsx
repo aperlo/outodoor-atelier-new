@@ -53,7 +53,7 @@ export default function CartPage() {
             const ql = q.lines.find((x) => x.line_id === line.id);
             const detail =
               line.format_label ??
-              `${line.sections.length ? line.sections.map((s) => `${num(s.length)}×${num(s.width)}`).join(' + ') + ' m · ' : ''}sfrido ${num(line.waste_pct)}%`;
+              `${line.sections.length ? line.sections.map((s) => `${num(s.length)}×${num(s.width)}`).join(' + ') + ' m · ' : ''}materiale in più ${num(line.waste_pct)}%`;
             return (
               <li key={line.id} class="flex gap-4 py-5">
                 {ql && <img src={resize(ql.image, 200)} alt="" class="size-20 shrink-0 object-cover sm:size-24" />}

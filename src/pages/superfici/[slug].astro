@@ -2,12 +2,13 @@
 import Base from '../../layouts/Base.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import DemoNote from '../../components/DemoNote.astro';
+import Esempio from '../../components/Esempio.astro';
 import Reviews from '../../components/Reviews.astro';
 import Icon from '../../components/Icon.astro';
 import ProductBuy from '../../components/islands/ProductBuy.tsx';
 import { products, config, type Product } from '../../lib/quote';
 import { site } from '../../config/site';
-import { img, Q, useLabels, collectionLabels, availabilityLabels, tones, P } from '../../data/content';
+import { img, Q, useLabels, collectionLabels, collectionPlain, availabilityLabels, tones, P } from '../../data/content';
 import { eur, num } from '../../lib/format';
 
 export function getStaticPaths() {
@@ -61,11 +62,11 @@ const jsonLd = config.demo_values
       </div>
 
       <div>
-        <p class="eyebrow text-brass-ink">{collection}{site.supplier.show && ` · ${P}`}</p>
+        <p class="eyebrow text-brass-ink">{collection} · {collectionPlain[p.collection]}{site.supplier.show && ` · ${P}`}</p>
         <h1 class="mt-3 text-4xl leading-tight sm:text-5xl">{p.name}</h1>
         <p class="mt-3 text-lg text-moss">{p.tagline}</p>
         <div class="mt-6">
-          <p class="font-mono text-2xl">{eur(p.price_m2)}<span class="text-sm text-moss">/m² + IVA</span></p>
+          <p class="font-mono text-2xl">{eur(p.price_m2)}<span class="text-sm text-moss">/m² + IVA</span><Esempio /></p>
           <p class="font-mono text-sm text-moss">{eur(p.price_m2 * (1 + config.vat_rate))}/m² IVA incl.</p>
         </div>
         <p class="mt-3 text-sm text-moss">{site.showAvailability ? availabilityLabels[p.availability] : site.deliveryNote}</p>

@@ -1,0 +1,11 @@
+---
+// Etichetta ESEMPIO accanto a prezzi e importi dimostrativi. Sparisce da sola quando
+// config.demo_values diventa false (catalogo e listino validati).
+import config from '../data/config.json';
+
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+---
+{config.demo_values && <span class={`esempio ${cls}`} title="Valore di esempio: sarà sostituito dal listino validato">Esempio</span>}

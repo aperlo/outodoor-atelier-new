@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import Esempio from './Esempio.astro';
 import config from '../data/config.json';
 import { site } from '../config/site';
 import { useLabels, availabilityLabels, resize } from '../data/content';
@@ -41,7 +42,7 @@ const searchText = `${p.name} ${p.tagline} ${p.appearance} ${uses.join(' ')}`.to
       <dt class="text-moss">Morbidezza</dt><dd class="capitalize">{p.softness}</dd>
     </dl>
     <div class="mt-auto pt-5">
-      <p class="font-mono text-lg">{eur(p.price_m2)}<span class="text-xs text-moss">/m² + IVA</span></p>
+      <p class="font-mono text-lg">{eur(p.price_m2)}<span class="text-xs text-moss">/m² + IVA</span><Esempio /></p>
       <p class="font-mono text-xs text-moss">{eur(p.price_m2 * (1 + config.vat_rate))}/m² IVA incl.</p>
       <p class="mt-2 text-xs text-moss">{site.showAvailability ? availabilityLabels[p.availability] : 'Su ordinazione'}</p>
       <div class="mt-4 flex gap-2">

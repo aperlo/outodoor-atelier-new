@@ -1,11 +1,11 @@
 import { useStore } from '@nanostores/preact';
-import { products, type Product } from '../../lib/quote';
+import { products, config, type Product } from '../../lib/quote';
 import { compare } from '../../lib/stores';
-import { collectionLabels, useLabels, resize } from '../../data/content';
+import { collectionFull, useLabels, resize } from '../../data/content';
 import { eur, num } from '../../lib/format';
 
 const rows: [string, (p: Product) => string][] = [
-  ['Linea', (p) => collectionLabels[p.collection]],
+  ['Linea', (p) => collectionFull(p.collection)],
   ['Altezza', (p) => `${p.height_mm} mm`],
   ['Aspetto', (p) => p.appearance],
   ['Morbidezza', (p) => p.softness],
@@ -14,7 +14,7 @@ const rows: [string, (p: Product) => string][] = [
   ['Peso', (p) => `${num(p.weight_kg_m2)} kg/m²`],
   ['Drenaggio', (p) => p.drainage],
   ['Applicazioni', (p) => p.uses.map((u) => useLabels[u]).join(', ')],
-  ['Prezzo', (p) => `${eur(p.price_m2)}/m² + IVA`],
+  ['Prezzo', (p) => `${eur(p.price_m2)}/m² + IVA${config.demo_values ? ' · esempio' : ''}`],
 ];
 
 export default function CompareTable() {

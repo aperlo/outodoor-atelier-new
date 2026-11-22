@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/PageHero.astro';
 import LeadForm from '../components/LeadForm.astro';
 import DemoNote from '../components/DemoNote.astro';
+import Esempio from '../components/Esempio.astro';
 import Icon from '../components/Icon.astro';
 import { config } from '../lib/quote';
 import { img, Q } from '../data/content';
@@ -35,7 +36,7 @@ const roles = ['Architetto', 'Interior designer', 'Paesaggista', 'Hotel / hospit
   </section>
 
   <section id="listino" class="wrap pb-16">
-    <p class="eyebrow text-brass-ink">Listino professionale indicativo</p>
+    <p class="eyebrow text-brass-ink">Listino professionale indicativo<Esempio /></p>
     <div class="mt-5 grid gap-px bg-stone-line sm:grid-cols-3">
       {config.trade_tiers_demo.map((t) => (
         <div class="bg-white p-6">

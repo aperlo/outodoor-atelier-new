@@ -7,9 +7,10 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site } from '../config/site';
-import { leadFields } from '../lib/leads';
+import { leadFields, trackingFields } from '../lib/leads';
 import { img, Q } from '../data/content';
 import Icon from '../components/Icon.astro';
+import Esempio from '../components/Esempio.astro';
 import config from '../data/config.json';
 
 interface Props {
@@ -94,7 +95,7 @@ const robots = !site.indexable || noindex ? 'noindex, nofollow' : 'index, follow
           <a href="/progetta" class="btn-forest mt-6">Progetta il tuo spazio</a>
         </div>
         <div class="border-t border-stone-line bg-white px-6 py-5" data-cart-foot hidden>
-          <div class="flex justify-between text-sm"><span class="text-moss">Subtotale merce (IVA escl.)</span><span class="font-mono" data-cart-subtotal></span></div>
+          <div class="flex justify-between text-sm"><span class="text-moss">Subtotale merce (IVA escl.)<Esempio /></span><span class="font-mono" data-cart-subtotal></span></div>
           <a href="/carrello" class="btn-forest mt-4 w-full">Riepilogo e richiesta d'ordine</a>
           <button type="button" class="mt-3 w-full text-center text-sm text-moss underline" data-cart-close>Continua a esplorare</button>
         </div>
@@ -105,7 +106,7 @@ const robots = !site.indexable || noindex ? 'noindex, nofollow' : 'index, follow
     <form name={site.formName} data-netlify="true" netlify-honeypot="bot-field" hidden>
       <input name="bot-field" />
       <input name="kind" />
-      {leadFields.map((f) => <input name={f} />)}
+      {[...leadFields, ...trackingFields].map((f) => <input name={f} />)}
       <input name="privacy" />
       <textarea name="payload"></textarea>
     </form>

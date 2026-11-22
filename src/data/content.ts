@@ -55,6 +55,15 @@ export const collectionLabels: Record<string, string> = {
   'high-performance': 'High Performance',
 };
 
+// Le linee in parole semplici, da affiancare ai nomi inglesi.
+export const collectionPlain: Record<string, string> = {
+  'natural-look': 'aspetto di prato vero',
+  'premium-comfort': 'morbido a piedi nudi',
+  'family-pets': 'per bambini e animali',
+  'high-performance': 'per calpestio intenso',
+};
+export const collectionFull = (key: string) => `${collectionLabels[key]} · ${collectionPlain[key]}`;
+
 export const availabilityLabels: Record<string, string> = {
   disponibile: 'Disponibile a magazzino',
   limitata: 'Disponibilità limitata',
@@ -173,10 +182,10 @@ export const nav = [
     { label: 'Hospitality', to: s('erba-sintetica-per-hotel') },
   ] }] },
   { id: 'superfici', label: 'Superfici', to: '/collezione', cols: [{ title: 'Collezioni', links: [
-    { label: 'Natural Look', to: '/collezione?collezione=natural-look' },
-    { label: 'Premium Comfort', to: '/collezione?collezione=premium-comfort' },
-    { label: 'Family & Pets', to: '/collezione?collezione=family-pets' },
-    { label: 'High Performance', to: '/collezione?collezione=high-performance' },
+    { label: 'Natural Look · aspetto di prato vero', to: '/collezione?collezione=natural-look' },
+    { label: 'Premium Comfort · morbido a piedi nudi', to: '/collezione?collezione=premium-comfort' },
+    { label: 'Family & Pets · per bambini e animali', to: '/collezione?collezione=family-pets' },
+    { label: 'High Performance · per calpestio intenso', to: '/collezione?collezione=high-performance' },
     { label: 'Collezione completa', to: '/collezione' },
     { label: 'Confronta modelli', to: '/confronta' },
   ] }] },

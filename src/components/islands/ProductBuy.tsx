@@ -3,6 +3,7 @@ import { useStore } from '@nanostores/preact';
 import { config, quote, materialFor, type CartLine } from '../../lib/quote';
 import { addToCart, deliveryCap, openCartDrawer } from '../../lib/stores';
 import { eur, num, uid, isCap } from '../../lib/format';
+import Esempio from './Esempio';
 
 interface Props {
   slug: string;
@@ -75,7 +76,7 @@ export default function ProductBuy({ slug, name, price }: Props) {
             <p class="mt-3 text-xs leading-relaxed text-moss">
               Spazio di {num(mat.area)} m²: {mat.strips === 1 ? `un telo da ${ROLL} m` : `${mat.strips} teli da ${ROLL} m affiancati`} lunghi {num(mat.stripLength)} m,
               cioè <b class="text-forest-deep">{num(mat.material)} m² di materiale</b>
-              {mat.seams > 0 && <> e {num(mat.seams)} m di giunta (banda e collante: <a class="underline" href={`/progetta?prodotto=${slug}&step=2`}>li calcola il configuratore</a>)</>}.
+              {mat.seams > 0 && <> e {num(mat.seams)} m di giunte tra i teli (nastro e collante: <a class="underline" href={`/progetta?prodotto=${slug}&step=2`}>li calcola il configuratore</a>)</>}.
             </p>
           )}
         </div>
@@ -91,12 +92,12 @@ export default function ProductBuy({ slug, name, price }: Props) {
           <div class="flex justify-between"><dt class="text-moss">{num(sqm)} m² × {eur(price)}</dt><dd class="font-mono">{eur(sqm * price)}</dd></div>
           {custom && <div class="flex justify-between"><dt class="text-moss">Taglio su misura</dt><dd class="font-mono">{eur(config.custom_cut_fee)}</dd></div>}
           <div class="flex justify-between">
-            <dt class="text-moss">Spedizione{ship && ship.status === 'calculated' ? ` · ${num(ship.weight_kg, 0)} kg` : ''}</dt>
+            <dt class="text-moss">Spedizione{ship && ship.status === 'calculated' ? ` · ${num(ship.weight_kg, 0)} kg` : ''}<Esempio /></dt>
             <dd class="font-mono">{ship?.status === 'calculated' ? eur(ship.amount ?? 0) : ship?.status === 'quote_required' ? 'Da quotare' : 'Inserisci il CAP'}</dd>
           </div>
           <div class="flex justify-between"><dt class="text-moss">IVA {Math.round(q.vat_rate * 100)}%</dt><dd class="font-mono">{eur(q.vat_amount)}</dd></div>
           <div class="flex justify-between pt-2 text-base font-semibold">
-            <dt>Totale{ship?.status === 'calculated' ? '' : ' (spedizione esclusa)'}</dt>
+            <dt>Totale{ship?.status === 'calculated' ? '' : ' (spedizione esclusa)'}<Esempio /></dt>
             <dd class="font-mono">{eur(q.total)}</dd>
           </div>
           {ship && ship.status === 'quote_required' && <p class="pt-1 text-xs text-moss">{ship.message}</p>}

@@ -5,6 +5,9 @@ import { toast } from '../lib/toast';
 import { site } from '../config/site';
 import config from '../data/config.json';
 import './cart-drawer';
+import { captureOrigin, trackingValues } from '../lib/leads';
+
+captureOrigin();
 
 const $ = <T extends Element>(sel: string, root: ParentNode = document) => root.querySelector<T>(sel);
 const $$ = <T extends Element>(sel: string, root: ParentNode = document) => [...root.querySelectorAll<T>(sel)];
@@ -82,7 +85,9 @@ $$<HTMLFormElement>('form[data-lead]').forEach((form) => {
     button.disabled = true;
     button.textContent = 'Invio…';
     try {
-      const body = new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString();
+      const data = new URLSearchParams(new FormData(form) as unknown as Record<string, string>);
+      for (const [key, value] of Object.entries(trackingValues())) data.set(key, value);
+      const body = data.toString();
       if (isLocal) console.info('[richiesta simulata]', body);
       else {
         const res = await fetch(site.formEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });

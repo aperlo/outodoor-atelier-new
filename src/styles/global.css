@@ -487,3 +487,24 @@ footer {
   outline: 2px solid var(--color-brass);
   outline-offset: 3px;
 }
+
+/* Etichetta ESEMPIO vicino agli importi dimostrativi (regola R10 del guru check). */
+.esempio {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.4rem;
+  border: 1px solid currentColor;
+  padding: 0.05rem 0.35rem;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-brass-ink);
+  white-space: nowrap;
+}
+.bg-forest-deep .esempio,
+.text-sand .esempio {
+  color: var(--color-brass);
+}

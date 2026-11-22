@@ -25,10 +25,20 @@ const steps = [
 // Capitoli della home: la sequenza narrativa, nell'ordine in cui si leggono.
 const chapters = [
   { n: 'I', id: 'apertura', title: "L'arte di vivere all'aperto" },
-  { n: 'II', id: 'mondi', title: 'Ogni spazio ha la sua natura' },
-  { n: 'III', id: 'collezione', title: 'La collezione' },
-  { n: 'IV', id: 'differenza', title: "L'esperienza della differenza" },
-  { n: 'V', id: 'reimmaginato', title: 'Il tuo spazio, reimmaginato' },
+  { n: 'II', id: 'prato-vero', title: 'Il prato vero, ogni settimana' },
+  { n: 'III', id: 'mondi', title: 'Ogni spazio ha la sua natura' },
+  { n: 'IV', id: 'collezione', title: 'La collezione' },
+  { n: 'V', id: 'differenza', title: "L'esperienza della differenza" },
+  { n: 'VI', id: 'reimmaginato', title: 'Il tuo spazio, reimmaginato' },
+];
+// Confronto concreto tra prato vero e sintetico: nessuna cifra, solo il lavoro che cambia.
+const chores = [
+  ['Acqua in estate', 'Irrigazione quasi ogni sera', 'Una sciacquata quando serve'],
+  ['Taglio', 'Ogni settimana, da aprile a ottobre', 'Mai'],
+  ['Concime e diserbo', "Più volte l'anno", 'Mai'],
+  ['Chiazze', 'Da riseminare', 'Il verde resta uniforme'],
+  ['Cane e pioggia', 'Fango in casa', 'Si risciacqua in pochi minuti'],
+  ['Ombra e terrazzi', 'Cresce male o per niente', 'Si posa anche su piastrelle'],
 ];
 const pros = ['Architetti', 'Paesaggisti', 'Installatori', 'Hospitality', 'Developer', 'Enti pubblici'];
 const worldSpan = ['lg:col-span-7 lg:row-span-2', 'lg:col-span-5', 'lg:col-span-5', 'lg:col-span-12'];
@@ -44,14 +54,13 @@ const worldSpan = ['lg:col-span-7 lg:row-span-2', 'lg:col-span-5', 'lg:col-span-
     <img src={img(Q.heroVilla, 2200)} alt="Villa contemporanea con giardino e piscina" fetchpriority="high" class="hero-img absolute inset-0 -z-10 size-full object-cover" />
     <div class="absolute inset-0 -z-10 bg-gradient-to-t from-forest-deep/90 via-forest-deep/35 to-forest-deep/45"></div>
     <div class="wrap pb-16 pt-32 sm:pb-20">
-      <p class="eyebrow text-brass">Capitolo I · {tagline}</p>
-      <h1 class="mt-5 text-5xl leading-[1.02] sm:text-7xl lg:text-8xl">L'arte di vivere<br /><em class="font-normal">all'aperto.</em></h1>
-      <p class="mt-5 max-w-xl text-base text-stone sm:text-lg">Scopri un nuovo modo di vivere i tuoi spazi esterni.</p>
-      <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-        <a href="/progetta" class="btn-brass">Progetta il tuo spazio <Icon name="arrow" size={16} /></a>
-        <a href="/campioni" class="btn-line-light"><Icon name="box" size={16} /> Richiedi {config.sample_service.max_samples} campioni gratuiti</a>
+      <p class="eyebrow text-brass">Capitolo I · L'arte di vivere all'aperto</p>
+      <h1 class="mt-5 text-5xl leading-[1.02] sm:text-7xl lg:text-8xl">365 giorni di verde.<br /><em class="font-normal">Le sere d'estate tornano tue.</em></h1>
+      <p class="mt-5 max-w-xl text-base text-stone sm:text-lg">Erba sintetica italiana di fascia alta: si posa una volta e resta verde tutto l'anno. Prima di scegliere, tocca {config.sample_service.max_samples} campioni a casa tua, gratis.</p>
+      <div class="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
+        <a href="/campioni" class="btn-brass"><Icon name="box" size={16} /> Richiedi {config.sample_service.max_samples} campioni gratuiti</a>
+        <a href="/progetta" class="eyebrow inline-flex items-center gap-2 border-b border-sand/50 pb-1 text-sand/90 hover:text-sand">Oppure calcola il preventivo <Icon name="arrow" size={14} /></a>
       </div>
-      <a href="/collezione" class="eyebrow mt-6 inline-flex items-center gap-2 border-b border-sand/50 pb-1 text-sand/90 hover:text-sand">Esplora la collezione <Icon name="arrow" size={14} /></a>
     </div>
   </section>
 
@@ -73,11 +82,44 @@ const worldSpan = ['lg:col-span-7 lg:row-span-2', 'lg:col-span-5', 'lg:col-span-
     </ol>
   </nav>
 
+  <!-- Il prato vero -->
+  <section id="prato-vero" class="wrap pb-16 pt-10 lg:pb-24">
+    <div class="grid gap-10 lg:grid-cols-12">
+      <div class="lg:col-span-5">
+        <p class="eyebrow text-brass-ink">Capitolo II · Il prato vero, ogni settimana</p>
+        <h2 class="mt-3 text-4xl leading-tight sm:text-5xl">Bellissimo. Finché non tocca a te curarlo.</h2>
+        <p class="mt-5 leading-relaxed text-moss">Un giardino o un terrazzo verde chiede tempo ogni settimana, e acqua ogni sera d'estate. Ecco cosa cambia, voce per voce.</p>
+        <p class="mt-5 text-sm leading-relaxed text-moss">Onestà prima di tutto: anche l'erba sintetica va spazzolata ogni tanto, e al sole pieno d'agosto si scalda. Te lo diciamo prima.</p>
+      </div>
+      <div class="overflow-x-auto lg:col-span-7">
+        <table class="w-full min-w-[520px] border-collapse text-sm">
+          <thead>
+            <tr class="border-b border-forest-deep text-left">
+              <th class="py-3 pr-4 font-semibold"></th>
+              <th class="py-3 pr-4 font-semibold">Prato naturale</th>
+              <th class="py-3 font-semibold">Erba sintetica</th>
+            </tr>
+          </thead>
+          <tbody>
+            {chores.map(([what, natural, synthetic]) => (
+              <tr class="border-b border-stone-line">
+                <td class="py-3 pr-4 text-moss">{what}</td>
+                <td class="py-3 pr-4">{natural}</td>
+                <td class="py-3 font-semibold text-forest">{synthetic}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <a href="/campioni" class="btn-forest mt-6"><Icon name="box" size={16} /> Tocca la differenza: {config.sample_service.max_samples} campioni gratis</a>
+      </div>
+    </div>
+  </section>
+
   <!-- Quattro mondi -->
-  <section id="mondi" class="wrap pb-20 pt-10 lg:pb-28">
+  <section id="mondi" class="wrap border-t border-stone-line py-20 lg:py-28">
     <div class="grid gap-6 lg:grid-cols-2 lg:items-end">
       <div>
-        <p class="eyebrow text-brass-ink">Capitolo II · Quattro mondi</p>
+        <p class="eyebrow text-brass-ink">Capitolo III · Quattro mondi</p>
         <h2 class="mt-3 text-4xl leading-tight sm:text-5xl">Ogni spazio ha la sua natura.</h2>
       </div>
       <p class="max-w-xl leading-relaxed text-moss">Non vendiamo un rotolo d'erba: progettiamo la trasformazione del tuo spazio. Scegli il mondo che ti somiglia e trova la superficie pensata per viverlo.</p>
@@ -105,7 +147,7 @@ const worldSpan = ['lg:col-span-7 lg:row-span-2', 'lg:col-span-5', 'lg:col-span-
     <div class="wrap">
       <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p class="eyebrow text-brass-ink">Capitolo III · La collezione</p>
+          <p class="eyebrow text-brass-ink">Capitolo IV · La collezione</p>
           <h2 class="mt-3 max-w-2xl text-4xl leading-tight sm:text-5xl">Superfici scelte come si sceglie un materiale d'architettura.</h2>
         </div>
         <a href="/collezione" class="btn-line shrink-0">Esplora tutta la collezione <Icon name="arrow" size={16} /></a>
@@ -124,7 +166,7 @@ const worldSpan = ['lg:col-span-7 lg:row-span-2', 'lg:col-span-5', 'lg:col-span-
       <figcaption class="eyebrow absolute bottom-4 left-4 bg-sand px-3 py-2 text-moss">Macro · dettaglio fibra</figcaption>
     </figure>
     <div>
-      <p class="eyebrow text-brass-ink">Capitolo IV · L'esperienza della differenza</p>
+      <p class="eyebrow text-brass-ink">Capitolo V · L'esperienza della differenza</p>
       <h2 class="mt-3 text-4xl leading-tight sm:text-5xl">Progettato per sembrare naturale. Ingegnerizzato per durare.</h2>
       <p class="mt-5 leading-relaxed text-moss">La differenza tra una superficie premium europea e un'alternativa low-cost non si vede in foto: si sente sotto i piedi, si nota dopo tre estati, si legge nella documentazione.</p>
       <dl class="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2">
@@ -143,7 +185,7 @@ const worldSpan = ['lg:col-span-7 lg:row-span-2', 'lg:col-span-5', 'lg:col-span-
   <section id="reimmaginato" class="bg-forest-deep py-20 text-sand lg:py-28">
     <div class="wrap grid gap-12 lg:grid-cols-2 lg:items-center">
       <div>
-        <p class="eyebrow text-brass">Capitolo V · Il tuo spazio, reimmaginato</p>
+        <p class="eyebrow text-brass">Capitolo VI · Il tuo spazio, reimmaginato</p>
         <h2 class="mt-3 text-4xl leading-tight sm:text-5xl">Guarda il tuo spazio in un modo diverso.</h2>
         <p class="mt-5 leading-relaxed text-stone">Carica una foto del tuo giardino, balcone o terrazzo, disegna l'area da trasformare e applica le texture della collezione. Confronta prima e dopo con un cursore, poi calcola il preventivo o chiedi una consulenza.</p>
         <div class="mt-8 flex flex-col gap-3 sm:flex-row">
