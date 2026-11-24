@@ -1,0 +1,22 @@
+---
+// Elenco di domande frequenti, apribili una alla volta. Dati in src/data/faq.ts.
+import { faqs, type Faq } from '../data/faq';
+
+interface Props {
+  /** Solo le domande segnate per la home. */
+  homeOnly?: boolean;
+}
+const { homeOnly = false } = Astro.props;
+const list: Faq[] = homeOnly ? faqs.filter((f) => f.home) : faqs;
+---
+<div class="divide-y divide-stone-line border-y border-stone-line">
+  {list.map((f) => (
+    <details class="group py-5">
+      <summary class="flex list-none items-center justify-between gap-6 font-heading text-xl [&::-webkit-details-marker]:hidden">
+        {f.q}
+        <span aria-hidden="true" class="text-2xl leading-none text-brass-ink transition-transform group-open:rotate-45">+</span>
+      </summary>
+      <p class="mt-3 max-w-3xl leading-relaxed text-moss">{f.a}</p>
+    </details>
+  ))}
+</div>

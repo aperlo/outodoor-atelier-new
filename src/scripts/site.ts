@@ -6,6 +6,8 @@ import { site } from '../config/site';
 import config from '../data/config.json';
 import './cart-drawer';
 import { captureOrigin, trackingValues } from '../lib/leads';
+import { track } from '../lib/track';
+import './analytics';
 
 captureOrigin();
 
@@ -57,7 +59,10 @@ document.addEventListener('click', (e) => {
     const name = sampleBtn.dataset.name ?? 'Campione';
     const r = toggle(samples, sampleBtn.dataset.sample!, MAX_SAMPLES);
     if (r === 'full') toast(`Il box contiene già ${MAX_SAMPLES} campioni`, { href: '/campioni', label: 'Apri il box' });
-    else if (r === 'added') toast(`${name} aggiunto al box campioni`, { href: '/campioni', label: 'Apri il box' });
+    else if (r === 'added') {
+      toast(`${name} aggiunto al box campioni`, { href: '/campioni', label: 'Apri il box' });
+      track('campione_aggiunto', { modello: sampleBtn.dataset.sample });
+    }
     else toast('Campione rimosso');
     return;
   }
@@ -93,6 +98,7 @@ $$<HTMLFormElement>('form[data-lead]').forEach((form) => {
         const res = await fetch(site.formEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
         if (!res.ok) throw new Error(String(res.status));
       }
+      track('richiesta_inviata', { tipo: data.get('kind'), pagina: data.get('page'), origine: data.get('origin') });
       location.href = '/grazie';
     } catch {
       toast('Invio non riuscito. Riprova tra poco.');

@@ -1,0 +1,31 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import FaqList from '../components/FaqList.astro';
+import { faqs } from '../data/faq';
+
+// Dati strutturati per i motori di ricerca: domande e risposte così come compaiono in pagina.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+<Base
+  title="Domande frequenti sull'erba sintetica"
+  description="Calore, microplastiche, cani, pioggia, posa fai da te, minimi d'ordine e pagamento: le risposte oneste prima di scegliere."
+  jsonLd={jsonLd}
+>
+  <PageHero
+    overline="Domande frequenti"
+    title="Prima di scegliere, le risposte oneste."
+    intro="Le domande che ci fanno più spesso, compresi i lati meno comodi dell'erba sintetica."
+  />
+  <div class="wrap py-14">
+    <FaqList />
+    <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+      <a href="/campioni" class="btn-forest">Richiedi 4 campioni gratuiti</a>
+      <a href="/contatti" class="btn-line">Fai un'altra domanda</a>
+    </div>
+  </div>
+</Base>

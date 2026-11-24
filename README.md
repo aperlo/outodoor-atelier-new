@@ -84,6 +84,20 @@ Le recensioni stanno in `src/data/reviews.json` e compaiono in home e in ogni sc
 
 Non c'è pagamento online. Dal carrello il cliente invia una **richiesta d'ordine**; arriva come modulo, un consulente conferma disponibilità, tempi e spedizione e comunica come pagare. Gli indirizzi `/checkout` e `/pagamento/*` del prototipo rimandano al carrello.
 
+## Misurazione e email (si accendono con le chiavi)
+
+Tutto è già nel codice e resta spento finché su Netlify (Project configuration → Environment variables) non ci sono le variabili. Dopo averle aggiunte serve una nuova pubblicazione.
+
+| Cosa | Variabili | Effetto |
+|---|---|---|
+| Statistiche di visita (PostHog, server UE, senza cookie) | `PUBLIC_POSTHOG_KEY` (facoltativa `PUBLIC_POSTHOG_HOST`, predefinito `https://eu.i.posthog.com`) | Pagine viste ed eventi `richiesta_inviata`, `campione_aggiunto`, `carrello_aggiunto`, con tipo, pagina e provenienza |
+| Email di conferma al cliente (Brevo) | `BREVO_API_KEY`, `BREVO_SENDER_EMAIL` (mittente verificato), facoltativa `BREVO_SENDER_NAME` | Conferma automatica di richiesta campioni, d'ordine e consulenza |
+| Sequenza di consigli dopo i campioni | anche `BREVO_LIST_ID` | Chi spunta il consenso facoltativo entra nella lista; l'automazione in Brevo manda le 3 email di `docs/sequenza-email-campioni.md` |
+
+La provenienza di ogni contatto (utm o sito di arrivo, pagina d'ingresso, pagina della richiesta) arriva comunque in Netlify Forms, anche senza analytics. Per misurare una campagna basta aggiungere al link `?utm_source=instagram&utm_medium=social&utm_campaign=nome`.
+
+I tre numeri da guardare: richieste di campioni per canale, richieste campioni che diventano richieste d'ordine, costo per richiesta (spesa della campagna diviso richieste).
+
 ## Pubblicazione su Netlify
 
 1. Collega il repository a Netlify: comando di build e cartella di pubblicazione sono già in `netlify.toml`.

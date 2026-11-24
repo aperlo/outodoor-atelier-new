@@ -9,6 +9,7 @@ import { environments, useLabels, img, resize, demoNote } from '../../data/conte
 import { eur, num, uid, isCap } from '../../lib/format';
 import LeadFormIsland from './LeadFormIsland';
 import Esempio from './Esempio';
+import { track } from '../../lib/track';
 
 const STEPS = ['Ambiente', 'Dimensioni', 'Superficie', 'Personalizza', 'Posa', 'Preventivo', 'Carrello'];
 const ROLL = config.roll_width_m;
@@ -115,6 +116,7 @@ export default function Configurator() {
   const addProject = () => {
     if (!line) return;
     addToCart({ ...line, id: uid() });
+    track('carrello_aggiunto', { modello: line.product_slug, mq: line.sqm, fonte: 'configuratore' });
     toast('Progetto aggiunto al carrello');
     go(7);
   };

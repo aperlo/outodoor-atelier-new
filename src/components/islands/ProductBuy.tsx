@@ -4,6 +4,7 @@ import { config, quote, materialFor, type CartLine } from '../../lib/quote';
 import { addToCart, deliveryCap, openCartDrawer } from '../../lib/stores';
 import { eur, num, uid, isCap } from '../../lib/format';
 import Esempio from './Esempio';
+import { track } from '../../lib/track';
 
 interface Props {
   slug: string;
@@ -48,6 +49,7 @@ export default function ProductBuy({ slug, name, price }: Props) {
     if (!line) return;
     addToCart({ ...line, id: uid() });
     openCartDrawer();
+    track('carrello_aggiunto', { modello: slug, mq: line.sqm, fonte: 'scheda' });
   };
 
   return (

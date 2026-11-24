@@ -1,3 +1,4 @@
+import { useState } from 'preact/hooks';
 import { useStore } from '@nanostores/preact';
 import { products, config } from '../../lib/quote';
 import { samples, toggle } from '../../lib/stores';
@@ -9,6 +10,23 @@ export default function SamplesBox() {
   const selected = useStore(samples);
   const max = config.sample_service.max_samples;
   const available = products.filter((p) => p.sample_available);
+  // Dopo l'invio il box si svuota: la conferma resta visibile comunque.
+  const [sent, setSent] = useState<string[] | null>(null);
+
+  if (sent) {
+    return (
+      <div class="mx-auto max-w-2xl border border-stone-line bg-white p-8 text-center" role="status">
+        <p class="eyebrow text-brass-ink">Richiesta inviata</p>
+        <h2 class="mt-3 text-3xl">Box campioni richiesto.</h2>
+        <p class="mt-3 text-moss">{sent.join(' · ')}</p>
+        <p class="mt-4 leading-relaxed text-moss">Ti scriviamo all'indirizzo email che hai indicato quando i campioni partono, con i tempi di consegna.</p>
+        <div class="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+          <a href="/progetta" class="btn-forest">Intanto calcola il preventivo</a>
+          <a href="/domande-frequenti" class="btn-line">Domande frequenti</a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div class="grid gap-10 lg:grid-cols-12">
@@ -54,11 +72,15 @@ export default function SamplesBox() {
             {selected.length > 0 ? (
               <LeadFormIsland
                 kind="sample_request"
+                offerAdvice
                 submitLabel="Richiedi il box campioni"
-                payload={() => ({ samples: samples.get() })}
+                payload={() => ({ samples: samples.get(), names: samples.get().map((s) => products.find((p) => p.slug === s)?.name ?? s) })}
                 successTitle="Box campioni richiesto."
                 successText="Ti confermiamo via email la spedizione dei campioni."
-                onDone={() => samples.set([])}
+                onDone={() => {
+                  setSent(selected.map((s) => products.find((p) => p.slug === s)?.name ?? s));
+                  samples.set([]);
+                }}
                 fields={[
                   { name: 'name', label: 'Nome e cognome', required: true },
                   { name: 'email', label: 'Email', type: 'email', required: true, half: true },

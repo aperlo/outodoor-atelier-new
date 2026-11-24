@@ -213,6 +213,7 @@ export const nav = [
   { id: 'ispirazione', label: 'Ispirazione', to: '/progetti', cols: [{ title: 'Ispirazione', links: [
     { label: 'Ambientazioni', to: '/progetti' },
     { label: 'Visualizzatore foto', to: '/visualizzatore' },
+    { label: 'Domande frequenti', to: '/domande-frequenti' },
   ] }] },
 ];
 

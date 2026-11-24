@@ -1,6 +1,7 @@
 // Invio delle richieste (campioni, consulenze, richieste d'ordine).
 // In produzione i dati vanno a Netlify Forms, modulo definito in src/layouts/Base.astro.
 import { site } from '../config/site';
+import { track } from './track';
 
 export const leadKinds = {
   consultation: 'Consulenza',
@@ -18,7 +19,7 @@ export const leadKinds = {
 export type LeadKind = keyof typeof leadKinds;
 
 // Campi accettati dal modulo: devono coincidere con quelli dichiarati in Base.astro.
-export const leadFields = ['name', 'email', 'phone', 'company', 'role', 'vat', 'address', 'city', 'cap', 'province', 'sqm', 'message'] as const;
+export const leadFields = ['name', 'email', 'phone', 'company', 'role', 'vat', 'address', 'city', 'cap', 'province', 'sqm', 'message', 'consigli'] as const;
 
 // Campi di misurazione, aggiunti a ogni richiesta: da quale pagina parte e da dove è arrivato il visitatore.
 export const trackingFields = ['page', 'origin', 'landing'] as const;
@@ -72,12 +73,13 @@ export async function submitLead(kind: LeadKind, fields: Record<string, string>,
   // In locale non esiste un servizio che riceve i moduli: la richiesta viene solo simulata.
   if (import.meta.env.DEV || ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
     console.info('[richiesta simulata]', Object.fromEntries(body));
-    return;
+  } else {
+    const res = await fetch(site.formEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+    });
+    if (!res.ok) throw new Error(`Invio non riuscito (${res.status})`);
   }
-  const res = await fetch(site.formEndpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
-  });
-  if (!res.ok) throw new Error(`Invio non riuscito (${res.status})`);
+  track('richiesta_inviata', { tipo: kind, pagina: body.get('page'), origine: body.get('origin') });
 }
