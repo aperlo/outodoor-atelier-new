@@ -26,6 +26,26 @@ function loadImage(src: string) {
 
 const examples = [Q.patio, Q.heroVilla, Q.balcony];
 
+// Le foto dei telefoni arrivano anche a 8000 px: le riduciamo prima di lavorarci.
+// Così la tela resta sotto i limiti di Safari su iPhone e il disegno è immediato.
+const MAX_SIDE = 2000;
+const isHeic = (file: File) => /image\/hei[cf]/i.test(file.type) || /\.hei[cf]$/i.test(file.name);
+
+async function prepareUpload(file: File) {
+  const url = URL.createObjectURL(file);
+  try {
+    const image = await loadImage(url);
+    const k = Math.min(1, MAX_SIDE / Math.max(image.naturalWidth, image.naturalHeight));
+    const c = document.createElement('canvas');
+    c.width = Math.round(image.naturalWidth * k);
+    c.height = Math.round(image.naturalHeight * k);
+    c.getContext('2d')!.drawImage(image, 0, 0, c.width, c.height);
+    return c.toDataURL('image/jpeg', 0.9);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
 export default function Visualizer() {
   const [src, setSrc] = useState(img(Q.patio, 1600));
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
@@ -35,12 +55,29 @@ export default function Visualizer() {
   const [slug, setSlug] = useState(products[0].slug);
   const [scale, setScale] = useState(0.35);
   const [split, setSplit] = useState(50);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [error, setError] = useState('');
   const canvas = useRef<HTMLCanvasElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
   const product = products.find((p) => p.slug === slug) ?? products[0];
 
   useEffect(() => {
-    setPhoto(null);
-    loadImage(src).then(setPhoto).catch(() => setPhoto(null));
+    let alive = true;
+    setStatus('loading');
+    loadImage(src)
+      .then((image) => {
+        if (!alive) return;
+        setPhoto(image);
+        setStatus('ready');
+      })
+      .catch(() => {
+        if (!alive) return;
+        setError('Non siamo riusciti ad aprire questa foto. Prova con un altro scatto.');
+        setStatus('error');
+      });
+    return () => {
+      alive = false;
+    };
   }, [src]);
   useEffect(() => {
     loadImage(img(Q.macro, 900)).then(setTexture).catch(() => setTexture(null));
@@ -113,22 +150,41 @@ export default function Visualizer() {
     setAreas([]);
     setDraft([]);
   };
-  const onFile = (file?: File) => {
+  const onFile = async (input: HTMLInputElement) => {
+    const file = input.files?.[0];
+    input.value = ''; // permette di ricaricare la stessa foto
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setSrc(String(reader.result));
+    setError('');
+    setStatus('loading');
+    stage.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    try {
+      const data = await prepareUpload(file);
       reset();
-    };
-    reader.readAsDataURL(file);
+      setSrc(data);
+    } catch {
+      setError(
+        isHeic(file)
+          ? 'Questa foto è in formato HEIC (iPhone) e il tuo browser non lo apre. Su iPhone: Impostazioni › Fotocamera › Formati › «Più compatibile», oppure invia la foto a te stesso via WhatsApp o email e caricala da lì.'
+          : 'Non siamo riusciti ad aprire questa foto. Usa un file JPG o PNG.',
+      );
+      setStatus(photo ? 'ready' : 'error');
+    }
   };
 
   return (
     <div class="grid gap-10 lg:grid-cols-12">
       <div class="lg:col-span-8">
         {/* Il riquadro prende la forma della foto, senza superare l'altezza dello schermo. */}
-        <div class="relative mx-auto w-fit max-w-full overflow-hidden bg-ivory">
-          <canvas ref={canvas} onClick={onCanvasClick} class="block h-auto max-h-[78vh] w-auto max-w-full cursor-crosshair" aria-label="Foto del tuo spazio: clicca per tracciare l'area" />
+        <div ref={stage} class="relative mx-auto w-fit max-w-full overflow-hidden bg-ivory">
+          <canvas ref={canvas} onClick={onCanvasClick} hidden={!photo} class="block h-auto max-h-[78vh] w-auto max-w-full cursor-crosshair" aria-label="Foto del tuo spazio: clicca per tracciare l'area" />
+          {photo && status === 'ready' && areas.length === 0 && draft.length === 0 && (
+            <p class="pointer-events-none absolute inset-x-0 bottom-4 mx-auto w-fit max-w-[90%] bg-forest-deep/85 px-4 py-2 text-center text-sm text-sand">
+              Tocca i bordi della zona da rivestire, punto dopo punto
+            </p>
+          )}
+          {photo && status === 'loading' && (
+            <p class="absolute inset-0 grid place-items-center bg-ivory/70 text-moss" role="status">Preparo la foto…</p>
+          )}
           {areas.length > 0 && photo && (
             <>
               <img src={src} alt="Prima" class="pointer-events-none absolute inset-0 size-full object-cover" style={{ clipPath: `inset(0 ${100 - split}% 0 0)` }} />
@@ -137,8 +193,13 @@ export default function Visualizer() {
               <span class="eyebrow pointer-events-none absolute right-3 top-3 bg-brass px-2 py-1 text-forest-deep">Dopo</span>
             </>
           )}
-          {!photo && <p class="p-16 text-center text-moss">Caricamento foto…</p>}
+          {!photo && status !== 'error' && <p class="p-16 text-center text-moss" role="status">Caricamento foto…</p>}
         </div>
+        {error && (
+          <p class="mt-4 border-l-2 border-brass bg-white p-4 text-sm" role="alert">
+            {error}
+          </p>
+        )}
         {areas.length > 0 && (
           <label class="mt-4 flex items-center gap-4 text-sm text-moss">
             Prima / Dopo
@@ -157,11 +218,11 @@ export default function Visualizer() {
           <p class="eyebrow text-brass-ink">1 · La tua foto</p>
           <label class="btn-forest mt-3 w-full cursor-pointer">
             Carica foto
-            <input type="file" accept="image/*" class="sr-only" onChange={(e) => onFile(e.currentTarget.files?.[0])} />
+            <input type="file" accept="image/*" class="sr-only" onChange={(e) => onFile(e.currentTarget)} />
           </label>
           <div class="mt-3 grid grid-cols-3 gap-2">
             {examples.map((id) => (
-              <button type="button" key={id} aria-label="Usa foto di esempio" onClick={() => { setSrc(img(id, 1600)); reset(); }}>
+              <button type="button" key={id} aria-label="Usa foto di esempio" onClick={() => { setError(''); setSrc(img(id, 1600)); reset(); }}>
                 <img src={img(id, 300)} alt="" class="aspect-[4/3] w-full object-cover" />
               </button>
             ))}
